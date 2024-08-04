@@ -1,5 +1,3 @@
-
-
 $.get(
   "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   (data) => {
@@ -46,7 +44,7 @@ $.get(
           data["bills"][i]["originChamberCode"] +
           data["bills"][i]["number"] +
           '</a> \
-          <a onclick="openModal(0,0,0)" class="card-link">More Info</a> \
+          <a onclick="openModal(0,0,0)" class="btn btn-primary btn-sm ms-3">More info</a>\
         </div> \
       </div>';
 
@@ -100,24 +98,29 @@ function openModal(congressNumber, billType, billNumber) {
   //   debugger;
   console.log(congressNumber, billType, billNumber);
   const modalTest =
-    '<div class="modal" tabindex="-1">\
-    <div class="modal-dialog">\
-      <div class="modal-content">\
-        <div class="modal-header">\
-          <h5 class="modal-title">Modal title</h5>\
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
-        </div>\
-        <div class="modal-body">\
-          <p>Modal body text goes here.</p>\
-        </div>\
-        <div class="modal-footer">\
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>\
-          <button type="button" class="btn btn-primary">Save changes</button>\
-        </div>\
+    '<div class="modal" tabindex="-1" role="dialog">\
+  <div class="modal-dialog" role="document">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <h5 class="modal-title">Modal title</h5>\
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+          <span aria-hidden="true">&times;</span>\
+        </button>\
+      </div>\
+      <div class="modal-body">\
+        <p>Modal body text goes here.</p>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-primary">Save changes</button>\
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\
       </div>\
     </div>\
-  </div>';
+  </div>\
+</div>';
   $("#modal-wrapper").append(modalTest);
+  $("#myModal").on("shown.bs.modal", function () {
+    $("#myModal").trigger("focus");
+  });
 }
 // "openModal(' +
 //           data["bills"][i]["congress"].toString() +
@@ -126,3 +129,111 @@ function openModal(congressNumber, billType, billNumber) {
 //           ", " +
 //           data["bills"][i]["number"].toString() +
 //           ')"
+
+$("#member-submit").on("click", function (e) {
+  // https://api.congress.gov/v3/member/MI?api_key=[INSERT_KEY]
+  e.preventDefault();
+  let findMemberURL =
+    "https://api.congress.gov/v3/member/congress/118/" +
+    $("#stateCode").val() +
+    "/" +
+    $("#districtCode").val() +
+    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+  console.log(findMemberURL);
+  // fetch(findMemberURL, (data) => {
+  //   console.log(data);
+  // })
+  console.log("here");
+  let dummyData = {
+    members: [
+      {
+        bioguideId: "L000174",
+        depiction: {
+          attribution:
+            "<a href='http://www.senate.gov/artandhistory/history/common/generic/Photo_Collection_of_the_Senate_Historical_Office.htm'>Courtesy U.S. Senate Historical Office</a>",
+          imageUrl: "https://www.congress.gov/img/member/l000174_200.jpg",
+        },
+        district: null,
+        name: "Leahy, Patrick J.",
+        partyName: "Democratic",
+        state: "Vermont",
+        terms: {
+          item: [
+            {
+              chamber: "Senate",
+              endYear: null,
+              startYear: 1975,
+            },
+          ],
+        },
+        updateDate: "2022-11-07T13:42:19Z",
+        url: "https://api.congress.gov/v3/member/L000174?format=json",
+      },
+      {
+        bioguideId: "K000377",
+        depiction: {
+          attribution:
+            "<a href='http://www.senate.gov/artandhistory/history/common/generic/Photo_Collection_of_the_Senate_Historical_Office.htm'>Courtesy U.S. Senate Historical Office</a>",
+          imageUrl: "https://www.congress.gov/img/member/k000377_200.jpg",
+        },
+        district: null,
+        name: "Kelly, Mark",
+        partyName: "Democratic",
+        state: "Arizona",
+        terms: {
+          item: [
+            {
+              chamber: "Senate",
+              end: null,
+              start: 2020,
+            },
+          ],
+        },
+        updateDate: "2023-04-01T12:42:17Z",
+        url: "https://api.congress.gov/v3/member/K000377?format=json",
+      },
+    ],
+  };
+
+  console.log(dummyData);
+
+  for (var i = 0; i < dummyData["members"].length; i++) {
+    // console.log("Member: " + dummyData["members"][i]);
+    console.log(dummyData["members"][i].party);
+    let memberCardHTML =
+      "<div class='card m-3' style='width: 20rem;'>\
+  <img src='" +
+      dummyData["members"][i].depiction.imageUrl +
+      "' class='card-img-top'>\
+  <div class='card-body'>\
+    <h5 class='card-title'>" +
+      dummyData["members"][i].name +
+      "</h5>\
+    <p class='card-subtitle'>Party: " +
+      dummyData["members"][i].party +
+      "<br/>State: " +
+      dummyData["members"][i].state +
+      "</p>\
+    <a href='#' class='btn btn-primary'>Just a btn</a>\
+  </div>\
+</div>";
+
+    //
+    $("#memberWrapper").html = "";
+    $("#memberWrapper").append(memberCardHTML);
+  }
+  // $.ajax({
+  //   type: "GET",
+  //   url: findMemberURL,
+  // })
+  //   .done(function (data) {
+  //     console.log(data);
+  //   })
+  //   .fail(function (jqXHR, textStatus, errorThrown) {
+  //     alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+  //   });
+  // $.get(findMemberURL, (data, status) => {
+  //   console.log("here ");
+  //   console.log(data);
+  // });
+});
