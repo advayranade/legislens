@@ -152,11 +152,16 @@ $("#member-submit").on("click", function (e) {
     console.log(data);
 
     // console.log(dummyData);
+    if (data["members"].length === 0) {
+      var memberCardHTML =
+        "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
+      $("#memberWrapper").append(memberCardHTML);
+    }
 
     for (let i = 0; i < data["members"].length; i++) {
       // console.log("Member: " + dummyData["members"][i]);
       console.log("End Year:", data["members"][i]["terms"]["item"][0].endYear);
-      let memberCardHTML = "";
+      memberCardHTML = "";
       if (data["members"][i]["terms"]["item"][0].endYear === undefined) {
         memberCardHTML =
           "<div class='card m-3' style='width: 20rem;' id=" +

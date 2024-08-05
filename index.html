@@ -28,18 +28,24 @@
           <div>
             <h3>Find your member</h3>
             <form>
-              <input
-                type="text"
-                placeholder="Enter your state code (Ex: MI)"
-                class="form-control"
-                id="stateCode"
-              />
-              <input
-                type="text"
-                placeholder="Enter your district (Ex: 17)"
-                class="form-control mt-2"
-                id="districtCode"
-              />
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="stateCode"
+                  placeholder="CA"
+                />
+                <label for="stateCode">State code (Ex: MI)</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="districtCode"
+                  placeholder="00"
+                />
+                <label for="districtCode">District # (Ex: 17)</label>
+              </div>  
               <button class="btn btn-primary mt-2" id="member-submit">
                 Submit
               </button>
