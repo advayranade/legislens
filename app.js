@@ -1,7 +1,7 @@
 $.get(
   "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   (data) => {
-    // if (status == 200) {
+    console.log(data);
     for (let i = 0; i < data["bills"].length; i++) {
       //   let billListCard = document.createElement("div");
       var billSummary;
@@ -26,6 +26,13 @@ $.get(
         if (billSummary === undefined) {
           billSummary = "No summary available. ";
         }
+        let test =
+          data["bills"][i]["congress"] +
+          "," +
+          data["bills"][i]["number"] +
+          "," +
+          data["bills"][i]["type"];
+        console.log(test);
         let cardHtml =
           '<div class="card m-3" style="width: auto"> \
         <div class="card-body"> \
@@ -44,20 +51,18 @@ $.get(
           data["bills"][i]["originChamberCode"] +
           data["bills"][i]["number"] +
           '</a> \
-          <a onclick="openModal(0,0,0)" class="btn btn-primary btn-sm ms-3">More info</a>\
+          <a onclick="openModal()" class="btn btn-primary btn-sm ms-3">More info</a>\
         </div> \
       </div>';
+        // (' +
+        //   data["bills"][i]["congress"] +
+        //   ",0" +
+        //   "," +
+        //   data["bills"][i]["number"] +
+        //   ')"
+        console.log("here");
 
-        if (i % 4 === 0) {
-          console.log(i);
-          $("#column-4").append(cardHtml);
-        } else if (i % 3 === 0) {
-          $("#column-3").append(cardHtml);
-        } else if (i % 2 === 0) {
-          $("#column-2").append(cardHtml);
-        } else {
-          $("#column-1").append(cardHtml);
-        }
+        $("#column-1").append(cardHtml);
       });
 
       //   billListItem.innerHTML = data["bills"][i]["title"];
@@ -94,33 +99,31 @@ $.get(
 //     "url": "https://api.congress.gov/v3/bill/118/s/3849?format=json"
 // },
 
-function openModal(congressNumber, billType, billNumber) {
-  //   debugger;
-  console.log(congressNumber, billType, billNumber);
+function openModal(t, e) {
+  // console.log(congressNumber, billType, billNumber);
+  console.log(e);
   const modalTest =
-    '<div class="modal" tabindex="-1" role="dialog">\
+    '<div class="modal" role="dialog" id="myModal">\
   <div class="modal-dialog" role="document">\
     <div class="modal-content">\
       <div class="modal-header">\
         <h5 class="modal-title">Modal title</h5>\
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
-          <span aria-hidden="true">&times;</span>\
-        </button>\
       </div>\
       <div class="modal-body">\
         <p>Modal body text goes here.</p>\
       </div>\
       <div class="modal-footer">\
-        <button type="button" class="btn btn-primary">Save changes</button>\
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
       </div>\
     </div>\
   </div>\
 </div>';
   $("#modal-wrapper").append(modalTest);
-  $("#myModal").on("shown.bs.modal", function () {
-    $("#myModal").trigger("focus");
+  $("#modal-close").on("click", function () {
+    $("#myModal").hide();
   });
+  $("#myModal").show();
+  $("#myModal").focus();
 }
 // "openModal(' +
 //           data["bills"][i]["congress"].toString() +
@@ -133,8 +136,9 @@ function openModal(congressNumber, billType, billNumber) {
 $("#member-submit").on("click", function (e) {
   // https://api.congress.gov/v3/member/MI?api_key=[INSERT_KEY]
   e.preventDefault();
+  $("#memberWrapper").text("");
   let findMemberURL =
-    "https://api.congress.gov/v3/member/congress/118/" +
+    "https://api.congress.gov/v3/member/" +
     $("#stateCode").val() +
     "/" +
     $("#districtCode").val() +
@@ -144,84 +148,43 @@ $("#member-submit").on("click", function (e) {
   //   console.log(data);
   // })
   console.log("here");
-  let dummyData = {
-    members: [
-      {
-        bioguideId: "L000174",
-        depiction: {
-          attribution:
-            "<a href='http://www.senate.gov/artandhistory/history/common/generic/Photo_Collection_of_the_Senate_Historical_Office.htm'>Courtesy U.S. Senate Historical Office</a>",
-          imageUrl: "https://www.congress.gov/img/member/l000174_200.jpg",
-        },
-        district: null,
-        name: "Leahy, Patrick J.",
-        partyName: "Democratic",
-        state: "Vermont",
-        terms: {
-          item: [
-            {
-              chamber: "Senate",
-              endYear: null,
-              startYear: 1975,
-            },
-          ],
-        },
-        updateDate: "2022-11-07T13:42:19Z",
-        url: "https://api.congress.gov/v3/member/L000174?format=json",
-      },
-      {
-        bioguideId: "K000377",
-        depiction: {
-          attribution:
-            "<a href='http://www.senate.gov/artandhistory/history/common/generic/Photo_Collection_of_the_Senate_Historical_Office.htm'>Courtesy U.S. Senate Historical Office</a>",
-          imageUrl: "https://www.congress.gov/img/member/k000377_200.jpg",
-        },
-        district: null,
-        name: "Kelly, Mark",
-        partyName: "Democratic",
-        state: "Arizona",
-        terms: {
-          item: [
-            {
-              chamber: "Senate",
-              end: null,
-              start: 2020,
-            },
-          ],
-        },
-        updateDate: "2023-04-01T12:42:17Z",
-        url: "https://api.congress.gov/v3/member/K000377?format=json",
-      },
-    ],
-  };
+  $.get(findMemberURL, (data) => {
+    console.log(data);
 
-  console.log(dummyData);
+    // console.log(dummyData);
 
-  for (var i = 0; i < dummyData["members"].length; i++) {
-    // console.log("Member: " + dummyData["members"][i]);
-    console.log(dummyData["members"][i].party);
-    let memberCardHTML =
-      "<div class='card m-3' style='width: 20rem;'>\
+    for (let i = 0; i < data["members"].length; i++) {
+      // console.log("Member: " + dummyData["members"][i]);
+      console.log("End Year:", data["members"][i]["terms"]["item"][0].endYear);
+      let memberCardHTML = "";
+      if (data["members"][i]["terms"]["item"][0].endYear === undefined) {
+        memberCardHTML =
+          "<div class='card m-3' style='width: 20rem;' id=" +
+          data["members"][i].bioguideId +
+          ">\
   <img src='" +
-      dummyData["members"][i].depiction.imageUrl +
-      "' class='card-img-top'>\
+          data["members"][i].depiction.imageUrl +
+          "' class='card-img-top'>\
   <div class='card-body'>\
     <h5 class='card-title'>" +
-      dummyData["members"][i].name +
-      "</h5>\
-    <p class='card-subtitle'>Party: " +
-      dummyData["members"][i].party +
-      "<br/>State: " +
-      dummyData["members"][i].state +
-      "</p>\
-    <a href='#' class='btn btn-primary'>Just a btn</a>\
+          data["members"][i].name +
+          "</h5>\
+    <p class='card-subtitle'><b>Party:</b> " +
+          data["members"][i].partyName +
+          "<br/><b>State:</b> " +
+          data["members"][i].state +
+          "<br/><b>Term Start:</b> " +
+          data["members"][i]["terms"]["item"][0].startYear +
+          "</p>\
+    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
+      }
 
-    //
-    $("#memberWrapper").html = "";
-    $("#memberWrapper").append(memberCardHTML);
-  }
+      //
+      $("#memberWrapper").append(memberCardHTML);
+    }
+  });
   // $.ajax({
   //   type: "GET",
   //   url: findMemberURL,
