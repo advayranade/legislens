@@ -283,27 +283,57 @@ $("#member-submit").on("click", function (e) {
       console.log("End Year:", data["members"][i]["terms"]["item"][0].endYear);
       memberCardHTML = "";
       if (data["members"][i]["terms"]["item"][0].endYear === undefined) {
-        memberCardHTML =
-          "<div class='card m-3' style='width: 20rem;' id=" +
-          data["members"][i].bioguideId +
-          ">\
+        if (data["members"][i].district) {
+          memberCardHTML =
+            "<div class='card m-3' style='width: 20rem;' id=" +
+            data["members"][i].bioguideId +
+            ">\
   <img src='" +
-          data["members"][i].depiction.imageUrl +
-          "' class='card-img-top'>\
+            data["members"][i].depiction.imageUrl +
+            "' class='card-img-top'>\
   <div class='card-body'>\
     <h5 class='card-title'>" +
-          data["members"][i].name +
-          "</h5>\
+            data["members"][i].name +
+            "</h5>\
     <p class='card-subtitle'><b>Party:</b> " +
-          data["members"][i].partyName +
-          "<br/><b>State:</b> " +
-          data["members"][i].state +
-          "<br/><b>Term Start:</b> " +
-          data["members"][i]["terms"]["item"][0].startYear +
-          "</p>\
+            data["members"][i].partyName +
+            "<br/><b>State:</b> " +
+            data["members"][i].state +
+            "<br/><b>Term Start:</b> " +
+            data["members"][i]["terms"]["item"][0].startYear +
+            "<br/><b>Chamber: </b>" +
+            data["members"][i]["terms"]["item"][0].chamber +
+            "<br/><b>District #: </b>" +
+            data["members"][i].district +
+            "</p>\
     <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
+        } else {
+          emberCardHTML =
+            "<div class='card m-3' style='width: 20rem;' id=" +
+            data["members"][i].bioguideId +
+            ">\
+  <img src='" +
+            data["members"][i].depiction.imageUrl +
+            "' class='card-img-top'>\
+  <div class='card-body'>\
+    <h5 class='card-title'>" +
+            data["members"][i].name +
+            "</h5>\
+    <p class='card-subtitle'><b>Party:</b> " +
+            data["members"][i].partyName +
+            "<br/><b>State:</b> " +
+            data["members"][i].state +
+            "<br/><b>Term Start:</b> " +
+            data["members"][i]["terms"]["item"][0].startYear +
+            "<br/><b>Chamber: </b>" +
+            data["members"][i]["terms"]["item"][0].chamber +
+            "<br/></p>\
+    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+  </div>\
+</div>";
+        }
       }
 
       //
