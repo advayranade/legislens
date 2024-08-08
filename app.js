@@ -293,8 +293,8 @@ $("#member-submit").on("click", function (e) {
   // https://api.congress.gov/v3/member/MI?api_key=[INSERT_KEY]
   e.preventDefault();
   if ($("#stateCode").val() === "" || $("#districtCode").val() === "") {
-    var noValueCheck = prompt(
-      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate. Please enter 'yes' to continue the request. Enter 'no' to block this. "
+    var noValueCheck = confirm(
+      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate. "
     );
   }
   if (noValueCheck || noValueCheck === undefined) {
