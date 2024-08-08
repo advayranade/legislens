@@ -60,11 +60,11 @@ $.get(
               data["bills"][i]["title"] +
               '</h5>\
                   </div>\
-                        <div class="latest-action"><span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                        <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
               data["bills"][i]["latestAction"]["actionDate"] +
               "): " +
               data["bills"][i]["latestAction"]["text"] +
-              '</span></div></div></div>\
+              '</small></div></div></div>\
               <p class="card-text mt-2">' +
               billSummary +
               '</p> \
