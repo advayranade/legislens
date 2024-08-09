@@ -405,3 +405,38 @@ $("#member-submit").on("click", function (e) {
   //   console.log(data);
   // });
 });
+
+$.get(
+  "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
+  (response) => {
+    console.log("ARTICLES:,", response["articles"]);
+    for (let i = 0; i < 6; i++) {
+      if (i === 0) {
+        var carouselItemClassCheck = "carousel-item active";
+      } else {
+        var carouselItemClassCheck = "carousel-item";
+      }
+
+      let carouselItem =
+        "<div class='" +
+        carouselItemClassCheck +
+        "'>\
+      <img style='filter:blur(3px);' src='" +
+        response["articles"][i].urlToImage +
+        "' class='d-block w-100' alt='image'>\
+      <div class='carousel-caption d-none d-md-block'>\
+        <a style='color:white; text-decoration:none;' href='" +
+        response["articles"][i].url +
+        "'><h5>" +
+        response["articles"][i].title +
+        "</h5></a>\
+        <p>" +
+        response["articles"][i].description +
+        "</p>\
+      </div>\
+    </div>";
+
+      $("#carouselInner").append(carouselItem);
+    }
+  }
+);
