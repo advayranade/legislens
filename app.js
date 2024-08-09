@@ -296,7 +296,7 @@ $("#member-submit").on("click", function (e) {
   e.preventDefault();
   if ($("#stateCode").val() === "" || $("#districtCode").val() === "") {
     var noValueCheck = confirm(
-      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate."
+      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate. "
     );
   }
   if (noValueCheck || noValueCheck === undefined) {
