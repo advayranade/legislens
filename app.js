@@ -52,9 +52,11 @@ $.get(
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
             <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                <img src="' +
+                <a href="/member-desc.html?id=' +
+              r["member"].bioguideId +
+              '"><img src="' +
               sponsorImg +
-              '" alt="Profile Picture" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;">\
+              '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
                 <div>' +
               '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
               data["bills"][i]["title"] +
@@ -293,8 +295,8 @@ $("#member-submit").on("click", function (e) {
   // https://api.congress.gov/v3/member/MI?api_key=[INSERT_KEY]
   e.preventDefault();
   if ($("#stateCode").val() === "" || $("#districtCode").val() === "") {
-    var noValueCheck = prompt(
-      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate. Please enter 'yes' to continue the request. Enter 'no' to block this. "
+    var noValueCheck = confirm(
+      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate."
     );
   }
   if (noValueCheck || noValueCheck === undefined) {
