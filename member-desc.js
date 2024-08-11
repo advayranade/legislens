@@ -53,18 +53,21 @@ $.get(
     }
 
     $.get(
-      "https://api.congress.gov/v3/" + memberID + "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+      "https://api.congress.gov/v3/member/" + memberID + "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
       function (data) {
-        let sponsoredLegislationHtml = "<b>Sponsored Legislation</b><br/>HI"
-
+        let sponsoredLegislationHtml = "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p>"
         for (legislation in data["sponsoredLegislation"]){
           let currentLegislation = data["sponsoredLegislation"][legislation]
+          let currentLegislationCategory = currentLegislation["policyArea"].name
+          if (currentLegislationCategory == null){
+            currentLegislationCategory = "No Category"
+          }
           let newLegislationHtml = "<div class = 'card my-2'>\
-          <h5 class='card-header>"+ currentLegislation["policyArea"].name +"</h5>\
+          <h5 class='card-header'>"+ currentLegislationCategory +"</h5>\
             <div class='card-body'>\
               <h5 class='card-title'>" + currentLegislation.title + "</h5>\
               <p class='card-text'><b>Latest Action (" + currentLegislation["latestAction"].actionDate + "): </b>" + currentLegislation["latestAction"].text + "\
-              <br/><b>More Info: </b><a href=" + currentLegislation.url + ">Click Here<a/>\
+              <br/><b>More Info: </b><a href=" + currentLegislation.url +">Click Here<a/>\
               </p>\
             </div>\
           </div>"
