@@ -425,7 +425,7 @@ $.get(
         response["articles"][i].urlToImage +
         "' class='d-block w-100' alt='image'>\
       <div class='carousel-caption d-none d-md-block'>\
-        <a style='color:white; text-decoration:none;' href='" +
+        <a target='_blank' style='color:white; text-decoration:none;' href='" +
         response["articles"][i].url +
         "'><h5>" +
         response["articles"][i].title +
