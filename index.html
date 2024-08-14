@@ -25,6 +25,76 @@
           <div class="col" id="column-1"></div>
         </div>
         <div id="member" class="col-3">
+          <h3>Top Headlines</h3>
+          <div id="newsWrapper" class="mb-3" style="width: 170%">
+            <div id="newsCarousel" class="carousel slide">
+              <div class="carousel-indicators">
+                <button
+                  type="button"
+                  data-bs-target="#newsCarousel"
+                  data-bs-slide-to="0"
+                  class="active"
+                  aria-current="true"
+                  aria-label="Slide 1"
+                ></button>
+                <button
+                  type="button"
+                  data-bs-target="#newsCarousel"
+                  data-bs-slide-to="1"
+                  aria-label="Slide 2"
+                ></button>
+                <button
+                  type="button"
+                  data-bs-target="#newsCarousel"
+                  data-bs-slide-to="2"
+                  aria-label="Slide 3"
+                ></button>
+                <button
+                  type="button"
+                  data-bs-target="#newsCarousel"
+                  data-bs-slide-to="3"
+                  aria-label="Slide 4"
+                ></button>
+                <button
+                  type="button"
+                  data-bs-target="#newsCarousel"
+                  data-bs-slide-to="4"
+                  aria-label="Slide 5"
+                ></button>
+                <button
+                  type="button"
+                  data-bs-target="#newsCarousel"
+                  data-bs-slide-to="5"
+                  aria-label="Slide 6"
+                ></button>
+              </div>
+              <div id="carouselInner" class="carousel-inner"></div>
+              <button
+                class="carousel-control-prev"
+                type="button"
+                data-bs-target="#newsCarousel"
+                data-bs-slide="prev"
+              >
+                <span
+                  class="carousel-control-prev-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button
+                class="carousel-control-next"
+                type="button"
+                data-bs-target="#newsCarousel"
+                data-bs-slide="next"
+              >
+                <span
+                  class="carousel-control-next-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
           <div>
             <h3>Find your member</h3>
             <form>
@@ -45,17 +115,16 @@
                   placeholder="00"
                 />
                 <label for="districtCode">District # (Ex: 17)</label>
-              </div>  
+              </div>
               <button class="btn btn-primary mt-2" id="member-submit">
                 Submit
               </button>
             </form>
             <div
               id="memberWrapper"
-              style="overflow-y: auto; height: 45rem; width: 25rem"
+              style="overflow-y: auto; height: 25rem; width: 25rem"
             ></div>
           </div>
-          <div class="row"></div>
         </div>
       </div>
     </div>
