@@ -1,4 +1,3 @@
-console.log(window.location.search);
 var memberID = window.location.search.split("=")[1];
 
 $.get(
@@ -105,20 +104,5 @@ $.get(
     $("#memberName").append(memberName);
     $("#memberInfoWrapper").append(memberInfoHtml);
     $("#memberImg").append(memberImgTag);
-
-    /*
-    1. Name
-    2. Image
-    3. Party
-    4. State
-    5. Current Chamber
-    6. Make call for Sponsored Legislation
-    8. All term history
-    9. Website URL
-    
-    
-    */
-
-    console.log(data);
   }
 );
