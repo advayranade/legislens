@@ -59,7 +59,6 @@ $.get(
         memberID +
         "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
       function (data) {
-        console.log(data);
         let sponsoredLegislationHtml =
           "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
         for (legislation in data["sponsoredLegislation"]) {
