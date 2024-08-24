@@ -2,9 +2,7 @@ var billData;
 $.get(
   "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   (data) => {
-    console.log(data);
     for (let i = 0; i < data["bills"].length; i++) {
-      //   let billListCard = document.createElement("div");
       var billSummary;
       let billInfoURL =
         "https://api.congress.gov/v3/bill/" +
@@ -24,11 +22,7 @@ $.get(
         "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
       $.get(sponsorURL, (res) => {
         billData = res;
-        console.log("bill data variable", billData);
-        console.log("inside sponsor URL get req");
-        console.log(res);
         let sponsorId = res["bill"]["sponsors"][0].bioguideId;
-        console.log("sponsor ID: ", sponsorId);
         let sponsorImgURL =
           "https://api.congress.gov/v3/member/" +
           sponsorId +
@@ -36,19 +30,15 @@ $.get(
         $.get(sponsorImgURL, (r) => {
           var sponsorImg = r["member"]["depiction"].imageUrl;
           $.get(billInfoURL, (resp) => {
-            console.log(resp["summaries"]);
             if (resp["summaries"][0]) {
               billSummary = resp["summaries"][0]["text"];
             } else if (resp["summaries"]) {
               billSummary = resp["summaries"]["text"];
             }
-            console.log("Bill summary: " + billSummary);
-            console.log("Bill summary available here: " + billSummary);
 
             if (billSummary === undefined) {
               billSummary = "No summary available. ";
             }
-            console.log("billData var", billData);
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
             <div class="card-body"><div class=""><div class="d-flex align-items-center">\
@@ -83,23 +73,8 @@ $.get(
               '" class="btn btn-primary btn-sm ms-3">More info</a>\
             </div> \
           </div>';
-            // (' +
-            //   data["bills"][i]["congress"] +
-            //   ",0" +
-            //   "," +
-            //   data["bills"][i]["number"] +
-            //   ')"
-            console.log("here");
 
             $("#column-1").append(cardHtml);
-            console.log(
-              "#" +
-                data["bills"][i]["congress"] +
-                "-" +
-                data["bills"][i]["type"].toLowerCase() +
-                "-" +
-                data["bills"][i]["number"]
-            );
             $(
               "#" +
                 data["bills"][i]["congress"] +
@@ -108,7 +83,6 @@ $.get(
                 "-" +
                 data["bills"][i]["number"]
             ).on("click", function (e) {
-              console.log();
               let params = e.target.id.split("-");
               let congressNum = params[0];
               let billType = params[1];
@@ -128,43 +102,11 @@ $.get(
           });
         });
       });
-
-      //   billListItem.innerHTML = data["bills"][i]["title"];
-      //   $("#top-bills").append(billListCard);
     }
   }
 );
 
-{
-  /* <div class="card" style="width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title">BILL TITLE</h5>
-    <h6 class="card-subtitle mb-2 text-muted">LATEST ACTION (DATE): ACTION DESC</h6>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
-  </div>
-</div> */
-}
-
-// {
-//     "congress": 118,
-//     "latestAction": {
-//         "actionDate": "2024-08-01",
-//         "text": "Placed on Senate Legislative Calendar under General Orders. Calendar No. 482."
-//     },
-//     "number": "3849",
-//     "originChamber": "Senate",
-//     "originChamberCode": "S",
-//     "title": "Promoting United States Leadership in Standards Act of 2024",
-//     "type": "S",
-//     "updateDate": "2024-08-02",
-//     "updateDateIncludingText": "2024-08-02T11:03:16Z",
-//     "url": "https://api.congress.gov/v3/bill/118/s/3849?format=json"
-// },
-
 function openBillModal(data) {
-  console.log("data inside openBillModal", data);
   var coSponsorData;
   var modalTest = "";
   var coSponsorHTML = "<ul>";
@@ -173,14 +115,6 @@ function openBillModal(data) {
       data["bill"]["cosponsors"].url +
       "&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
   } else {
-    // var coSponsorURL =
-    //   "https://api.congress.gov/v3/bill/" +
-    //   data["request"].congress +
-    //   "/" +
-    //   data["request"].billType +
-    //   "/" +
-    //   data["request"].billNumber +
-    //   "/cosponsors?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
     console.error("Error finding co-sponsors. Try again later Err 400");
     alert("Error opening bill. Try again later");
     return;
@@ -283,16 +217,7 @@ function openBillModal(data) {
   });
 }
 
-// "openModal(' +
-//           data["bills"][i]["congress"].toString() +
-//           ", " +
-//           data["bills"][i]["type"].toString() +
-//           ", " +
-//           data["bills"][i]["number"].toString() +
-//           ')"
-
 $("#member-submit").on("click", function (e) {
-  // https://api.congress.gov/v3/member/MI?api_key=[INSERT_KEY]
   e.preventDefault();
   if ($("#stateCode").val() === "" || $("#districtCode").val() === "") {
     var noValueCheck = confirm(
@@ -307,15 +232,7 @@ $("#member-submit").on("click", function (e) {
       "/" +
       $("#districtCode").val() +
       "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-    console.log(findMemberURL);
-    // fetch(findMemberURL, (data) => {
-    //   console.log(data);
-    // })
-    console.log("here");
     $.get(findMemberURL, (data) => {
-      console.log(data);
-
-      // console.log(dummyData);
       if (data["members"].length === 0) {
         var memberCardHTML =
           "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
@@ -323,11 +240,6 @@ $("#member-submit").on("click", function (e) {
       }
 
       for (let i = 0; i < data["members"].length; i++) {
-        // console.log("Member: " + dummyData["members"][i]);
-        console.log(
-          "End Year:",
-          data["members"][i]["terms"]["item"][0].endYear
-        );
         memberCardHTML = "";
         if (data["members"][i]["terms"]["item"][0].endYear === undefined) {
           if (data["members"][i].district) {
@@ -357,7 +269,7 @@ $("#member-submit").on("click", function (e) {
   </div>\
 </div>";
           } else {
-            emberCardHTML =
+            memberCardHTML =
               "<div class='card m-3' style='width: 20rem;' id=" +
               data["members"][i].bioguideId +
               ">\
@@ -382,34 +294,17 @@ $("#member-submit").on("click", function (e) {
 </div>";
           }
         }
-
-        //
         $("#memberWrapper").append(memberCardHTML);
       }
     });
   } else {
     return;
   }
-  // $.ajax({
-  //   type: "GET",
-  //   url: findMemberURL,
-  // })
-  //   .done(function (data) {
-  //     console.log(data);
-  //   })
-  //   .fail(function (jqXHR, textStatus, errorThrown) {
-  //     alert("AJAX call failed: " + textStatus + ", " + errorThrown);
-  //   });
-  // $.get(findMemberURL, (data, status) => {
-  //   console.log("here ");
-  //   console.log(data);
-  // });
 });
 
 $.get(
   "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
   (response) => {
-    console.log("ARTICLES:,", response["articles"]);
     for (let i = 0; i < 6; i++) {
       if (i === 0) {
         var carouselItemClassCheck = "carousel-item active";

@@ -1,4 +1,3 @@
-console.log(window.location.search);
 var memberID = window.location.search.split("=")[1];
 
 $.get(
@@ -60,7 +59,6 @@ $.get(
         memberID +
         "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
       function (data) {
-        console.log(data);
         let sponsoredLegislationHtml =
           "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
         for (legislation in data["sponsoredLegislation"]) {
@@ -105,20 +103,5 @@ $.get(
     $("#memberName").append(memberName);
     $("#memberInfoWrapper").append(memberInfoHtml);
     $("#memberImg").append(memberImgTag);
-
-    /*
-    1. Name
-    2. Image
-    3. Party
-    4. State
-    5. Current Chamber
-    6. Make call for Sponsored Legislation
-    8. All term history
-    9. Website URL
-    
-    
-    */
-
-    console.log(data);
   }
 );
