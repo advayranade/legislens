@@ -114,99 +114,143 @@ function openBillModal(data) {
     var coSponsorURL =
       data["bill"]["cosponsors"].url +
       "&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-  } else {
-    console.error("Error finding co-sponsors. Try again later Err 400");
-    alert("Error opening bill. Try again later");
-    return;
-  }
-  $.get(coSponsorURL, (response) => {
-    for (let index = 0; index < response["cosponsors"].length; index++) {
-      let coSponsorName = response["cosponsors"][index].fullName;
-      let createdHTML = "<li>" + coSponsorName + "</li>";
-      coSponsorHTML = coSponsorHTML + createdHTML;
-    }
-    if (data["bill"]["policyArea"]) {
-      modalTest =
-        '<div class="modal" role="dialog" id="myModal">\
-  <div class="modal-dialog" role="document">\
-    <div class="modal-content">\
-      <div class="modal-header">\
-        <h5 class="modal-title">' +
-        data["bill"].title +
-        '</h5>\
+    $.get(coSponsorURL, (response) => {
+      for (let index = 0; index < response["cosponsors"].length; index++) {
+        let coSponsorName = response["cosponsors"][index].fullName;
+        let createdHTML = "<li>" + coSponsorName + "</li>";
+        coSponsorHTML = coSponsorHTML + createdHTML;
+      }
+      if (data["bill"]["policyArea"]) {
+        modalTest =
+          '<div class="modal" role="dialog" id="myModal">\
+      <div class="modal-dialog" role="document">\
+        <div class="modal-content">\
+          <div class="modal-header">\
+            <h5 class="modal-title">' +
+          data["bill"].title +
+          '</h5>\
+          </div>\
+          <div class="modal-body">\
+            <dl class="row">\
+      <dt class="col-sm-4">Sponsor</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"]["sponsors"][0].fullName +
+          '</dd>\
+      <dt class="col-sm-4">Bill #</dt>\
+      <dd class="col-sm-7">\
+          ' +
+          data["bill"].number +
+          '\
+      </dd>\
+      <dt class="col-sm-4">Introduced</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"].introducedDate +
+          '</dd>\
+      <dt class="col-sm-4">Policy Area</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"]["policyArea"].name +
+          '</dd>\
+      <dt class="col-sm-4">Co-Sponsors</dt>\
+      <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
+    </dl>\
+    <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
+          coSponsorHTML +
+          '</ul></div></div></div>\
+          <div class="modal-footer">\
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
+          </div>\
+        </div>\
       </div>\
-      <div class="modal-body">\
-        <dl class="row">\
-  <dt class="col-sm-4">Sponsor</dt>\
-  <dd class="col-sm-7">' +
-        data["bill"]["sponsors"][0].fullName +
-        '</dd>\
-  <dt class="col-sm-4">Bill #</dt>\
-  <dd class="col-sm-7">\
-      ' +
-        data["bill"].number +
-        '\
-  </dd>\
-  <dt class="col-sm-4">Introduced</dt>\
-  <dd class="col-sm-7">' +
-        data["bill"].introducedDate +
-        '</dd>\
-  <dt class="col-sm-4">Policy Area</dt>\
-  <dd class="col-sm-7">' +
-        data["bill"]["policyArea"].name +
-        '</dd>\
-  <dt class="col-sm-4">Co-Sponsors</dt>\
-  <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
-</dl>\
-<div class="collapse" id="coSponsorsList"><div class="card card-body">' +
-        coSponsorHTML +
-        '</ul></div></div></div>\
-      <div class="modal-footer">\
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
+    </div>';
+      } else {
+        modalTest =
+          '<div class="modal" role="dialog" id="myModal">\
+      <div class="modal-dialog" role="document">\
+        <div class="modal-content">\
+          <div class="modal-header">\
+            <h5 class="modal-title">' +
+          data["bill"].title +
+          '</h5>\
+          </div>\
+          <div class="modal-body">\
+            <dl class="row">\
+      <dt class="col-sm-4">Sponsor</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"]["sponsors"][0].fullName +
+          '</dd>\
+      <dt class="col-sm-4">Bill #</dt>\
+      <dd class="col-sm-7">\
+          ' +
+          data["bill"].number +
+          '\
+      </dd>\
+      <dt class="col-sm-4">Introduced</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"].introducedDate +
+          '</dd>\
+      <dt class="col-sm-4">Co-Sponsors</dt>\
+      <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
+    </dl>\
+    <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
+          coSponsorHTML +
+          '</ul></div></div></div>\
+          <div class="modal-footer">\
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
+          </div>\
+        </div>\
       </div>\
-    </div>\
-  </div>\
-</div>';
-    } else {
-      modalTest =
-        '<div class="modal" role="dialog" id="myModal">\
-  <div class="modal-dialog" role="document">\
-    <div class="modal-content">\
-      <div class="modal-header">\
-        <h5 class="modal-title">' +
-        data["bill"].title +
-        '</h5>\
-      </div>\
-      <div class="modal-body">\
-        <dl class="row">\
-  <dt class="col-sm-4">Sponsor</dt>\
-  <dd class="col-sm-7">' +
-        data["bill"]["sponsors"][0].fullName +
-        '</dd>\
-  <dt class="col-sm-4">Bill #</dt>\
-  <dd class="col-sm-7">\
-      ' +
-        data["bill"].number +
-        '\
-  </dd>\
-  <dt class="col-sm-4">Introduced</dt>\
-  <dd class="col-sm-7">' +
-        data["bill"].introducedDate +
-        '</dd>\
-  <dt class="col-sm-4">Co-Sponsors</dt>\
-  <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
-</dl>\
-<div class="collapse" id="coSponsorsList"><div class="card card-body">' +
-        coSponsorHTML +
-        '</ul></div></div></div>\
-      <div class="modal-footer">\
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
-      </div>\
-    </div>\
-  </div>\
-</div>';
-    }
+    </div>';
+      }
 
+      $("#modal-wrapper").text("");
+      $("#modal-wrapper").append(modalTest);
+      $("#modal-close").on("click", function () {
+        $("#myModal").hide();
+      });
+      $("#myModal").show();
+      $("#myModal").focus();
+    });
+  } else {
+    modalTest =
+      '<div class="modal" role="dialog" id="myModal">\
+      <div class="modal-dialog" role="document">\
+        <div class="modal-content">\
+          <div class="modal-header">\
+            <h5 class="modal-title">' +
+      data["bill"].title +
+      '</h5>\
+          </div>\
+          <div class="modal-body">\
+            <dl class="row">\
+      <dt class="col-sm-4">Sponsor</dt>\
+      <dd class="col-sm-7">' +
+      data["bill"]["sponsors"][0].fullName +
+      '</dd>\
+      <dt class="col-sm-4">Bill #</dt>\
+      <dd class="col-sm-7">\
+          ' +
+      data["bill"].number +
+      '\
+      </dd>\
+      <dt class="col-sm-4">Introduced</dt>\
+      <dd class="col-sm-7">' +
+      data["bill"].introducedDate +
+      '</dd>\
+      <dt class="col-sm-4">Policy Area</dt>\
+      <dd class="col-sm-7">' +
+      data["bill"]["policyArea"].name +
+      '</dd>\
+      <dt class="col-sm-4">Co-Sponsors</dt>\
+      <dd class="col-sm-7">NO COSPONSORS</dd>\
+    </dl>\
+    <div class="collapse" id="coSponsorsList"><div class="card card-body" style="text-decoration:underline;">NO COSPONSORS' +
+      '</ul></div></div></div>\
+          <div class="modal-footer">\
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
     $("#modal-wrapper").text("");
     $("#modal-wrapper").append(modalTest);
     $("#modal-close").on("click", function () {
@@ -214,7 +258,7 @@ function openBillModal(data) {
     });
     $("#myModal").show();
     $("#myModal").focus();
-  });
+  }
 }
 
 $("#member-submit").on("click", function (e) {
@@ -305,6 +349,7 @@ $("#member-submit").on("click", function (e) {
 $.get(
   "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
   (response) => {
+    let newsUrl;
     for (let i = 0; i < 6; i++) {
       if (i === 0) {
         var carouselItemClassCheck = "carousel-item active";
@@ -312,12 +357,21 @@ $.get(
         var carouselItemClassCheck = "carousel-item";
       }
 
+      // https://www.shutterstock.com/image-vector/newspaper-line-vector-illustration-isolated-600nw-1928795186.jpg
+
+      if (response["articles"][i].urlToImage) {
+        newsUrl = response["articles"][i].urlToImage;
+      } else {
+        newsUrl =
+          "https://www.shutterstock.com/image-vector/newspaper-line-vector-illustration-isolated-600nw-1928795186.jpg";
+      }
+
       let carouselItem =
         "<div class='" +
         carouselItemClassCheck +
         "'>\
       <img style='filter:blur(3px);' src='" +
-        response["articles"][i].urlToImage +
+        newsUrl +
         "' class='d-block w-100' alt='image'>\
       <div class='carousel-caption d-none d-md-block'>\
         <a target='_blank' style='color:black; text-decoration:none;' href='" +
@@ -335,3 +389,4 @@ $.get(
     }
   }
 );
+$(".carousel").dataInterval = 2000;
