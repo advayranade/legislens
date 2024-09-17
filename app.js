@@ -77,11 +77,11 @@ $.get(
             $("#column-1").append(cardHtml);
             $(
               "#" +
-                data["bills"][i]["congress"] +
-                "-" +
-                data["bills"][i]["type"].toLowerCase() +
-                "-" +
-                data["bills"][i]["number"]
+              data["bills"][i]["congress"] +
+              "-" +
+              data["bills"][i]["type"].toLowerCase() +
+              "-" +
+              data["bills"][i]["number"]
             ).on("click", function (e) {
               let params = e.target.id.split("-");
               let congressNum = params[0];
@@ -107,6 +107,7 @@ $.get(
 );
 
 function openBillModal(data) {
+  console.log(data)
   var coSponsorData;
   var modalTest = "";
   var coSponsorHTML = "<ul>";
@@ -190,6 +191,16 @@ function openBillModal(data) {
           '</dd>\
       <dt class="col-sm-4">Co-Sponsors</dt>\
       <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
+      <dt class="col-sm-4">More Info</dt>\
+      <dd class="col-sm-7">\
+      <a href="https://congress.gov/bill/' +
+          data["bill"].congress +
+          '/' +
+          data["bill"].type.toLowerCase() +
+          '/' +
+          data["bill"].number +
+          ' " target="_blank">View</a>\
+      </dd>\
     </dl>\
     <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
           coSponsorHTML +

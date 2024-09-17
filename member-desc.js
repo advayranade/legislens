@@ -88,7 +88,7 @@ $.get(
             currentLegislation.type.toLowerCase() +
             "/" +
             currentLegislation.number +
-            "' target='_blank'>Click Here</a>\
+            "' target='_blank'>View</a>\
               </p>\
             </div>\
           </div>";
