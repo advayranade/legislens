@@ -84,16 +84,18 @@ $.get(
           let currentLegislationActionDate = "No Action Date Found";
           let currentLegislationLatestAction = "No Latest Action Found";
           if (currentLegislation.hasOwnProperty("latestAction")) {
-            if (currentLegislation["latestAction"].hasOwnProperty("actionDate")){
-              currentLegislationActionDate = currentLegislation["latestAction"].actionDate;
-              if (currentLegislationActionDate == null){
-                currentLegislationActionDate = "No Action Date Found";
+            if (currentLegislation["latestAction"] !== null){
+              if (currentLegislation["latestAction"].hasOwnProperty("actionDate")){
+                currentLegislationActionDate = currentLegislation["latestAction"].actionDate;
+                if (currentLegislationActionDate == null){
+                  currentLegislationActionDate = "No Action Date Found";
+                }
               }
-            }
-            if (currentLegislation["latestAction"].hasOwnProperty("text")){
-              currentLegislationLatestAction = currentLegislation["latestAction"].text;
-              if (currentLegislationLatestAction == null){
-                currentLegislationLatestAction = "No Latest Action Found";
+              if (currentLegislation["latestAction"].hasOwnProperty("text")){
+                currentLegislationLatestAction = currentLegislation["latestAction"].text;
+                if (currentLegislationLatestAction == null){
+                  currentLegislationLatestAction = "No Latest Action Found";
+                }
               }
             }
           }
