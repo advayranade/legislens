@@ -61,12 +61,41 @@ $.get(
       function (data) {
         let sponsoredLegislationHtml =
           "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
+        console.log(data)
         for (legislation in data["sponsoredLegislation"]) {
           let currentLegislation = data["sponsoredLegislation"][legislation];
-          let currentLegislationCategory =
-            currentLegislation["policyArea"].name;
-          if (currentLegislationCategory == null) {
-            currentLegislationCategory = "No Category";
+          console.log(currentLegislation)
+          let currentLegislationCategory = "No Category Found";
+          if (currentLegislation.hasOwnProperty("policyArea")) {
+            if (currentLegislation["policyArea"].hasOwnProperty["name"]) {
+              currentLegislationCategory = currentLegislation["policyArea"]["name"];
+              if (currentLegislationCategory == null){
+                currentLegislationCategory = "No Category Found";
+              }
+            }
+          }
+          let currentLegislationTitle = "No Title Found";
+          if (currentLegislation.hasOwnProperty("title")){
+            currentLegislationTitle = currentLegislation.title;
+            if (currentLegislationTitle == null){
+              currentLegislationTitle = "No Title Found";
+            }
+          }
+          let currentLegislationActionDate = "No Action Date Found";
+          let currentLegislationLatestAction = "No Latest Action Found";
+          if (currentLegislation.hasOwnProperty("latestAction")) {
+            if (currentLegislation["latestAction"].hasOwnProperty("actionDate")){
+              currentLegislationActionDate = currentLegislation["latestAction"].actionDate;
+              if (currentLegislationActionDate == null){
+                currentLegislationActionDate = "No Action Date Found";
+              }
+            }
+            if (currentLegislation["latestAction"].hasOwnProperty("text")){
+              currentLegislationLatestAction = currentLegislation["latestAction"].text;
+              if (currentLegislationLatestAction == null){
+                currentLegislationLatestAction = "No Latest Action Found";
+              }
+            }
           }
           let newLegislationHtml =
             "<div class = 'card my-2'>\
@@ -75,17 +104,17 @@ $.get(
             "</h5>\
             <div class='card-body'>\
               <h5 class='card-title'>" +
-            currentLegislation.title +
+            currentLegislationTitle +
             "</h5>\
               <p class='card-text'><b>Latest Action (" +
-            currentLegislation["latestAction"].actionDate +
+            currentLegislationActionDate +
             "): </b>" +
-            currentLegislation["latestAction"].text +
+            currentLegislationLatestAction +
             "\
               <br/><b>More Info: </b><a href='https://congress.gov/bill/" +
             currentLegislation.congress +
             "/" +
-            currentLegislation.type.toLowerCase() +
+            currentLegislation.type +
             "/" +
             currentLegislation.number +
             "' target='_blank'>View</a>\
