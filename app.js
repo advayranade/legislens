@@ -370,20 +370,37 @@ $.get(
         "<div class='" +
         carouselItemClassCheck +
         "'>\
-      <img style='filter:blur(3px);' src='" +
+        <img style='filter: grayscale(100%) blur(10px);' src='" +
         newsUrl +
         "' class='d-block w-100' alt='image'>\
-      <div class='carousel-caption d-none d-md-block'>\
-        <a target='_blank' style='color:black; text-decoration:none;' href='" +
+        <div class='carousel-caption d-none d-md-block'>\
+          <a target='_blank' style='color:#A0B6C6; text-decoration:none;' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-        <p style='color:black;'>" +
+          <p style='color:#A0B6C6;'>" +
         response["articles"][i].description +
         "</p>\
-      </div>\
-    </div>";
+        </div>\
+      </div>";
+      //       let carouselItem =
+      //         "<div class='card'>\
+      //   <img src='" +
+      //         newsUrl +
+      //         "' class='card-img-top' alt='news-image'>\
+      //   <div class='carousel-caption d-none d-md-block card-body'>\
+      //     <h5 class='card-title'>" +
+      //         response["articles"][i].title +
+      //         "</h5>\
+      //     <p class='card-text'>" +
+      //         response["articles"][i].description +
+      //         "</p>\
+      //     <a href='" +
+      //         newsUrl +
+      //         "' target='_blank' >Learn more</a>\
+      //   </div>\
+      // </div>";
 
       $("#carouselInner").append(carouselItem);
     }
