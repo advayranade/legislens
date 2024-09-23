@@ -89,6 +89,17 @@ $.get(
                 currentLegislationActionDate = currentLegislation["latestAction"].actionDate;
                 if (currentLegislationActionDate == null){
                   currentLegislationActionDate = "No Action Date Found";
+                } else {
+                  let month = currentLegislationActionDate[5] + currentLegislationActionDate[6]
+                  if (month[0] == 0) {
+                    month = month[1];
+                  }
+                  let day = currentLegislationActionDate[8] + currentLegislationActionDate[9]
+                  if (day[0] == 0) {
+                    day = day[1];
+                  }
+                  let year = currentLegislationActionDate[0] + currentLegislationActionDate[1] + currentLegislationActionDate[2] + currentLegislationActionDate[3]
+                  currentLegislationActionDate = month + "/" + day + "/" + year;
                 }
               }
               if (currentLegislation["latestAction"].hasOwnProperty("text")){
