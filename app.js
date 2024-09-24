@@ -28,6 +28,7 @@ $.get(
           sponsorId +
           "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
         $.get(sponsorImgURL, (r) => {
+          console.log('r',r)
           var sponsorImg = r["member"]["depiction"].imageUrl;
           $.get(billInfoURL, (resp) => {
             if (resp["summaries"][0]) {
@@ -364,7 +365,9 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>District #: </b>" +
               data["members"][i].district +
               "</p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+    <a href='/member-desc.html?id=" +
+    data["members"][i].bioguideId +
+    "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
           } else {
@@ -388,7 +391,9 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>Chamber: </b>" +
               data["members"][i]["terms"]["item"][0].chamber +
               "<br/></p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+    <a href='/member-desc.html?id=" +
+    data["members"][i].bioguideId +
+    "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
           }
