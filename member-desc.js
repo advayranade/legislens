@@ -11,15 +11,10 @@ $.get(
         data['member']["state"] +
         "&roles=legislatorUpperBody&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg",
         function (dataByLocation) {
-          console.log(dataByLocation)
-          console.log(data)
           let officials = dataByLocation.officials;
           for (term in officials){
-            console.log(officials[term]['name'].toLowerCase());
-            console.log((data['member']['firstName'] + " " + data['member']['lastname']).toLowerCase());
             let nameByLocation = (officials[term]['name']).split(" ")
             if ((nameByLocation[0] + " " + nameByLocation[nameByLocation.length - 1]).toLowerCase() == (data['member']['firstName'] + " " + data['member']['lastName']).toLowerCase()) {
-              console.log(officials[term])
               let channels = officials[term]['channels']
               var channelsHTML = "";
               for (number in channels) {

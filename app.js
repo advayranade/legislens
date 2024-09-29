@@ -28,7 +28,6 @@ $.get(
           sponsorId +
           "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
         $.get(sponsorImgURL, (r) => {
-          console.log('r',r)
           var sponsorImg = r["member"]["depiction"].imageUrl;
           $.get(billInfoURL, (resp) => {
             if (resp["summaries"][0]) {
@@ -121,7 +120,6 @@ $.get(
 );
 
 function openBillModal(data) {
-  console.log(data)
   var coSponsorData;
   var modalTest = "";
   var coSponsorHTML = "<ul>";
