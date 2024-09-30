@@ -26,7 +26,7 @@ $.get(
                 if (id == undefined || id == null){
                   id = "Not Found"
                 }
-                let currentChannelHTML = "<b>" + type + ": </b>" + id + "<br>"
+                let currentChannelHTML = "<b>" + type + ": </b>" + "@" + id + "<br>"
                 channelsHTML += currentChannelHTML;
               }
             }
@@ -194,7 +194,7 @@ $.get(
                 if (id == undefined || id == null){
                   id = "Not Found"
                 }
-                let currentChannelHTML = "<b>" + type + ": </b>" + id + "<br>"
+                let currentChannelHTML = "<b>" + type + ": </b>" + "@" + id + "<br>"
                 channelsHTML += currentChannelHTML;
               }
             }
