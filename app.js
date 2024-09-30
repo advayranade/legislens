@@ -39,6 +39,19 @@ $.get(
             if (billSummary === undefined) {
               billSummary = "No summary available. ";
             }
+            if (data['bills'][i]["latestAction"]["actionDate"]){
+              var actionDate = data['bills'][i]["latestAction"]["actionDate"];
+            }
+            let month = actionDate[5] + actionDate[6]
+            if (month[0] == 0) {
+              month = month[1];
+            }
+            let day = actionDate[8] + actionDate[9]
+            if (day[0] == 0) {
+              day = day[1];
+            }
+            let year = actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3]
+            actionDate = month + "/" + day + "/" + year;
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
             <div class="card-body"><div class=""><div class="d-flex align-items-center">\
@@ -53,7 +66,7 @@ $.get(
               '</h5>\
                   </div>\
                         <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
-              data["bills"][i]["latestAction"]["actionDate"] +
+              actionDate +
               "): " +
               data["bills"][i]["latestAction"]["text"] +
               '</small></div></div></div>\
@@ -77,11 +90,11 @@ $.get(
             $("#column-1").append(cardHtml);
             $(
               "#" +
-                data["bills"][i]["congress"] +
-                "-" +
-                data["bills"][i]["type"].toLowerCase() +
-                "-" +
-                data["bills"][i]["number"]
+              data["bills"][i]["congress"] +
+              "-" +
+              data["bills"][i]["type"].toLowerCase() +
+              "-" +
+              data["bills"][i]["number"]
             ).on("click", function (e) {
               let params = e.target.id.split("-");
               let congressNum = params[0];
@@ -120,6 +133,17 @@ function openBillModal(data) {
         let createdHTML = "<li>" + coSponsorName + "</li>";
         coSponsorHTML = coSponsorHTML + createdHTML;
       }
+      let introducedDate = data["bill"]["introducedDate"];
+      let month = introducedDate[5] + introducedDate[6]
+      if (month[0] == 0) {
+        month = month[1];
+      }
+      let day = introducedDate[8] + introducedDate[9]
+      if (day[0] == 0) {
+        day = day[1];
+      }
+      let year = introducedDate[0] + introducedDate[1] + introducedDate[2] + introducedDate[3]
+      introducedDate = month + "/" + day + "/" + year;
       if (data["bill"]["policyArea"]) {
         modalTest =
           '<div class="modal" role="dialog" id="myModal">\
@@ -144,12 +168,22 @@ function openBillModal(data) {
       </dd>\
       <dt class="col-sm-4">Introduced</dt>\
       <dd class="col-sm-7">' +
-          data["bill"].introducedDate +
+          introducedDate +
           '</dd>\
       <dt class="col-sm-4">Policy Area</dt>\
       <dd class="col-sm-7">' +
           data["bill"]["policyArea"].name +
           '</dd>\
+          <dt class="col-sm-4">More Info</dt>\
+      <dd class="col-sm-7">\
+      <a href="https://congress.gov/bill/' +
+          data["bill"].congress +
+          '/' +
+          data["bill"].type.toLowerCase() +
+          '/' +
+          data["bill"].number +
+          ' " target="_blank">View</a>\
+      </dd>\
       <dt class="col-sm-4">Co-Sponsors</dt>\
       <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
     </dl>\
@@ -186,8 +220,18 @@ function openBillModal(data) {
       </dd>\
       <dt class="col-sm-4">Introduced</dt>\
       <dd class="col-sm-7">' +
-          data["bill"].introducedDate +
+          introducedDate +
           '</dd>\
+          <dt class="col-sm-4">More Info</dt>\
+      <dd class="col-sm-7">\
+      <a href="https://congress.gov/bill/' +
+          data["bill"].congress +
+          '/' +
+          data["bill"].type.toLowerCase() +
+          '/' +
+          data["bill"].number +
+          ' " target="_blank">View</a>\
+      </dd>\
       <dt class="col-sm-4">Co-Sponsors</dt>\
       <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
     </dl>\
@@ -234,12 +278,22 @@ function openBillModal(data) {
       </dd>\
       <dt class="col-sm-4">Introduced</dt>\
       <dd class="col-sm-7">' +
-      data["bill"].introducedDate +
+      introducedDate +
       '</dd>\
       <dt class="col-sm-4">Policy Area</dt>\
       <dd class="col-sm-7">' +
       data["bill"]["policyArea"].name +
       '</dd>\
+      <dt class="col-sm-4">More Info</dt>\
+      <dd class="col-sm-7">\
+      <a href="https://congress.gov/bill/' +
+      data["bill"].congress +
+      '/' +
+      data["bill"].type.toLowerCase() +
+      '/' +
+      data["bill"].number +
+      ' " target="_blank">View</a>\
+      </dd>\
       <dt class="col-sm-4">Co-Sponsors</dt>\
       <dd class="col-sm-7">NO COSPONSORS</dd>\
     </dl>\
@@ -309,7 +363,9 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>District #: </b>" +
               data["members"][i].district +
               "</p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+    <a href='/member-desc.html?id=" +
+    data["members"][i].bioguideId +
+    "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
           } else {
@@ -333,7 +389,9 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>Chamber: </b>" +
               data["members"][i]["terms"]["item"][0].chamber +
               "<br/></p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+    <a href='/member-desc.html?id=" +
+    data["members"][i].bioguideId +
+    "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
           }
@@ -370,20 +428,37 @@ $.get(
         "<div class='" +
         carouselItemClassCheck +
         "'>\
-      <img style='filter:blur(3px);' src='" +
+        <img style='filter: grayscale(100%) blur(10px);' src='" +
         newsUrl +
         "' class='d-block w-100' alt='image'>\
-      <div class='carousel-caption d-none d-md-block'>\
-        <a target='_blank' style='color:black; text-decoration:none;' href='" +
+        <div class='carousel-caption d-none d-md-block'>\
+          <a target='_blank' style='color:#A0B6C6; text-decoration:none;' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-        <p style='color:black;'>" +
+          <p style='color:#A0B6C6;'>" +
         response["articles"][i].description +
         "</p>\
-      </div>\
-    </div>";
+        </div>\
+      </div>";
+      //       let carouselItem =
+      //         "<div class='card'>\
+      //   <img src='" +
+      //         newsUrl +
+      //         "' class='card-img-top' alt='news-image'>\
+      //   <div class='carousel-caption d-none d-md-block card-body'>\
+      //     <h5 class='card-title'>" +
+      //         response["articles"][i].title +
+      //         "</h5>\
+      //     <p class='card-text'>" +
+      //         response["articles"][i].description +
+      //         "</p>\
+      //     <a href='" +
+      //         newsUrl +
+      //         "' target='_blank' >Learn more</a>\
+      //   </div>\
+      // </div>";
 
       $("#carouselInner").append(carouselItem);
     }
