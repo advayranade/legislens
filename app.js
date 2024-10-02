@@ -421,9 +421,10 @@ $("#member-submit").on("click", function (e) {
       }
     },
     error: function (err) {
-      $("#memberWrapper").html("");
+      $("#memberWrapper").html(
+        "<h5 class='my-2'>This zip code/address is invalid. Please try again.</h5>"
+      );
       console.error(err.statusText, err);
-      alert("Error: " + err);
     },
   });
 });
