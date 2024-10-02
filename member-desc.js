@@ -232,90 +232,78 @@ $.get(
   memberID +
   "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   function (data) {
-    console.log(data);
-    let zipcode = data['member']['state']
-    if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'house of representatives') {
-      let state = data['member']['state']
-      state = (statesAbbreviations[state]).toLowerCase()
-      let district;xw
-      if (data['member'].hasOwnProperty('district')) {
-        district = data['member']['district']
-      } else {
-        district = 'at-large'
-      }
-      let ocdID = 'ocd-division/country:us/state:' + state + '/cd:' + district
-      zipcode = zipCodes[ocdID]
-    }
-    $.get(
-      "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" + zipcode,
-      function (dataByLocation) {
-        console.log(dataByLocation);
-        let officials = dataByLocation.officials;
-        for (term in officials) {
-          let nameByLocation = (officials[term]['name']).split(" ")
-          if ((nameByLocation[0] + " " + nameByLocation[nameByLocation.length - 1]).toLowerCase() == (data['member']['firstName'] + " " + data['member']['lastName']).toLowerCase()) {
-            let channels = officials[term]['channels']
-            var channelsHTML = "";
-            for (number in channels) {
-              let type = channels[number].type;
-              let id = channels[number].id;
-              if (type == undefined || type == null) {
-                type = "Not Found"
+    if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'senate') {
+      $.get(
+        "https://www.googleapis.com/civicinfo/v2/representatives?address=" +
+        data['member']["state"] +
+        "&roles=legislatorUpperBody&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg",
+        function (dataByLocation) {
+          let officials = dataByLocation.officials;
+          for (term in officials){
+            let nameByLocation = (officials[term]['name']).split(" ")
+            if ((nameByLocation[0] + " " + nameByLocation[nameByLocation.length - 1]).toLowerCase() == (data['member']['firstName'] + " " + data['member']['lastName']).toLowerCase()) {
+              let channels = officials[term]['channels']
+              var channelsHTML = "";
+              for (number in channels) {
+                let type = channels[number].type;
+                let id = channels[number].id;
+                if (type == undefined || type == null){
+                  type = "Not Found"
+                }
+                if (id == undefined || id == null){
+                  id = "Not Found"
+                }
+                let currentChannelHTML = "<b>" + type + ": </b>" + id + "<br>"
+                channelsHTML += currentChannelHTML;
               }
-              if (id == undefined || id == null) {
-                id = "Not Found"
-              }
-              let currentChannelHTML = "<b>" + type + ": </b>" + "@" + id + "<br>"
-              channelsHTML += currentChannelHTML;
             }
           }
-        }
-        let memberImgTag =
-          "<img src='" +
-          data["member"]["depiction"].imageUrl +
-          "' style='width:100%'>";
-        let memberName = data["member"].directOrderName;
-        let memberInfoHtml =
-          "<b>Party: </b>" +
-          data["member"]["partyHistory"][0].partyName +
-          "<br/><b>State: </b>" +
-          data["member"].state +
-          "<br/><b>Current Chamber: </b>" +
-          data["member"]["terms"][data["member"]["terms"].length - 1].chamber +
-          "<br/><b>Website: </b><a href=" +
-          data["member"].officialWebsiteUrl +
-          " target='_blank'>" +
-          data["member"].officialWebsiteUrl +
-          "</a><br>\
+          let memberImgTag =
+            "<img src='" +
+            data["member"]["depiction"].imageUrl +
+            "' style='width:100%'>";
+          let memberName = data["member"].directOrderName;
+          let memberInfoHtml =
+            "<b>Party: </b>" +
+            data["member"]["partyHistory"][0].partyName +
+            "<br/><b>State: </b>" +
+            data["member"].state +
+            "<br/><b>Current Chamber: </b>" +
+            data["member"]["terms"][data["member"]["terms"].length - 1].chamber +
+            "<br/><b>Website: </b><a href=" +
+            data["member"].officialWebsiteUrl +
+            " target='_blank'>" +
+            data["member"].officialWebsiteUrl +
+            "</a><br>\
       <b>Phone: </b>" + data.member.addressInformation.phoneNumber + "<br>\
-      <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" +
-          channelsHTML + "\
+      <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" + 
+      channelsHTML + "\
       <b>Terms:</b>\
       <div style='overflow-y: auto; height: 30rem;'>";
-        for (term in data["member"].terms) {
-          let termArray = data["member"]["terms"];
-          let currentTerm = termArray[termArray.length - term - 1];
-          if (currentTerm.endYear) {
-            var endYearVariable = currentTerm.endYear;
-          } else {
-            var endYearVariable = "Present";
-          }
-          let termHTML =
-            "<div class='card my-2'>\
+          for (term in data["member"].terms) {
+            let termArray = data["member"]["terms"];
+            let currentTerm = termArray[termArray.length - term - 1];
+            if (currentTerm.endYear) {
+              var endYearVariable = currentTerm.endYear;
+            } else {
+              var endYearVariable = "Present";
+            }
+            let termHTML =
+              "<div class='card my-2'>\
   <h5 class='card-header'>" +
-            currentTerm.startYear +
-            " - " +
-            endYearVariable +
-            "</h5>\
+              currentTerm.startYear +
+              " - " +
+              endYearVariable +
+              "</h5>\
   <div class='card-body'>\
     <h5 class='card-title'>" +
-            currentTerm.chamber +
-            "</h5>\
+              currentTerm.chamber +
+              "</h5>\
     <p class='card-text'><b>State: </b>" +
-            currentTerm.stateName +
-            "<br/><b>Congress Session: </b>" +
-            currentTerm.congress +
-            "</p>\
+              currentTerm.stateName +
+              "<br/><b>Congress Session: </b>" +
+              currentTerm.congress +
+              "</p>\
   </div>\
 </div>";
 
