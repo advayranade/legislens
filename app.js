@@ -56,7 +56,7 @@ $.get(
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
             <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                <a href="/legislens/member-desc.html?id=' +
+                <a href="/member-desc.html?id=' +
               r["member"].bioguideId +
               '"><img src="' +
               sponsorImg +
@@ -368,7 +368,7 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>District #: </b>" +
               data["members"][i].district +
               "</p>\
-    <a href='/legislens/member-desc.html?id=" +
+    <a href='/member-desc.html?id=" +
               data["members"][i].bioguideId +
               "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
@@ -394,7 +394,7 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>Chamber: </b>" +
               data["members"][i]["terms"]["item"][0].chamber +
               "<br/></p>\
-    <a href='/legislens/member-desc.html?id=" +
+    <a href='/member-desc.html?id=" +
               data["members"][i].bioguideId +
               "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
