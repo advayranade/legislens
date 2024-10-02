@@ -263,87 +263,87 @@ function openBillModal(data) {
 
 $("#member-submit").on("click", function (e) {
   e.preventDefault();
-  if ($("#stateCode").val() === "" || $("#districtCode").val() === "") {
-    var noValueCheck = confirm(
-      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate. "
-    );
-  }
-  if (noValueCheck || noValueCheck === undefined) {
-    $("#memberWrapper").text("");
-    let findMemberURL =
-      "https://api.congress.gov/v3/member/" +
-      $("#stateCode").val() +
-      "/" +
-      $("#districtCode").val() +
-      "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-    $.get(findMemberURL, (data) => {
-      if (data["members"].length === 0) {
-        var memberCardHTML =
-          "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
-        $("#memberWrapper").append(memberCardHTML);
-      }
-
-      for (let i = 0; i < data["members"].length; i++) {
-        memberCardHTML = "";
-        if (data["members"][i]["terms"]["item"][0].endYear === undefined) {
-          if (data["members"][i].district) {
-            memberCardHTML =
-              "<div class='card m-3' style='width: 20rem;' id=" +
-              data["members"][i].bioguideId +
-              ">\
-  <img src='" +
-              data["members"][i].depiction.imageUrl +
-              "' class='card-img-top'>\
-  <div class='card-body'>\
-    <h5 class='card-title'>" +
-              data["members"][i].name +
-              "</h5>\
-    <p class='card-subtitle'><b>Party:</b> " +
-              data["members"][i].partyName +
-              "<br/><b>State:</b> " +
-              data["members"][i].state +
-              "<br/><b>Term Start:</b> " +
-              data["members"][i]["terms"]["item"][0].startYear +
-              "<br/><b>Chamber: </b>" +
-              data["members"][i]["terms"]["item"][0].chamber +
-              "<br/><b>District #: </b>" +
-              data["members"][i].district +
-              "</p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
-  </div>\
-</div>";
-          } else {
-            memberCardHTML =
-              "<div class='card m-3' style='width: 20rem;' id=" +
-              data["members"][i].bioguideId +
-              ">\
-  <img src='" +
-              data["members"][i].depiction.imageUrl +
-              "' class='card-img-top'>\
-  <div class='card-body'>\
-    <h5 class='card-title'>" +
-              data["members"][i].name +
-              "</h5>\
-    <p class='card-subtitle'><b>Party:</b> " +
-              data["members"][i].partyName +
-              "<br/><b>State:</b> " +
-              data["members"][i].state +
-              "<br/><b>Term Start:</b> " +
-              data["members"][i]["terms"]["item"][0].startYear +
-              "<br/><b>Chamber: </b>" +
-              data["members"][i]["terms"]["item"][0].chamber +
-              "<br/></p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
-  </div>\
-</div>";
-          }
+  $("#memberWrapper").text("");
+  let findMemberURL =
+    "https://www.googleapis.com/civicinfo/v2/representatives?address=" +
+    $("#zipCode").val() +
+    "&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody";
+  $.get(findMemberURL, (data) => {
+    console.log(data);
+    if (data.officials.length === 0) {
+      var memberCardHTML =
+        "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
+      $("#memberWrapper").append(memberCardHTML);
+    }
+    var officeIndex = 0;
+    for (let i = 0; i < data.officials.length; i++) {
+      debugger;
+      console.log(i);
+      memberCardHTML = "";
+      if (0 == 0) {
+        let districtIdSplit = data["offices"][1].divisionId.split(":");
+        let districtNum = districtIdSplit[districtIdSplit.length - 1];
+        let chamber = "";
+        if (data["offices"][0]["officialIndices"].includes(i)) {
+          debugger;
+          chamber = data["offices"][0].name;
         }
-        $("#memberWrapper").append(memberCardHTML);
+
+        if (
+          data["offices"][1] &&
+          data["offices"][1]["officialIndices"].includes(i)
+        ) {
+          debugger;
+          chamber = data["offices"][1].name;
+        }
+
+        if (chamber.toLowerCase() == "u.s. representative") {
+          memberCardHTML =
+            "<div class='card m-3' style='width: 20rem;' class='rep'" +
+            ">" +
+            "<div class='card-body'>\
+    <h5 class='card-title'>" +
+            data["officials"][i].name +
+            "</h5>\
+    <p class='card-subtitle'><b>Party:</b> " +
+            data["officials"][i].party +
+            "<br/><b>State:</b> " +
+            data["normalizedInput"].state +
+            "<br/><b>Chamber: </b>" +
+            chamber +
+            "<br/><b>District #: </b>" +
+            districtNum +
+            "</p>\
+    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+  </div>\
+</div>";
+        } else {
+          memberCardHTML =
+            "<div class='card m-3' style='width: 20rem;' class='rep'" +
+            ">" +
+            "<div class='card-body'>\
+  <h5 class='card-title'>" +
+            data["officials"][i].name +
+            "</h5>\
+  <p class='card-subtitle'><b>Party:</b> " +
+            data["officials"][i].party +
+            "<br/><b>State:</b> " +
+            data["normalizedInput"].state +
+            "<br/><b>Chamber: </b>" +
+            chamber +
+            "<br/>" +
+            "</p>\
+  <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+</div>\
+</div>";
+        }
       }
-    });
-  } else {
-    return;
-  }
+      $("#memberWrapper").append(memberCardHTML);
+      if (officeIndex !== 1) {
+        officeIndex++;
+      }
+    }
+  });
 });
 
 $.get(
@@ -374,12 +374,12 @@ $.get(
         newsUrl +
         "' class='d-block w-100' alt='image'>\
       <div class='carousel-caption d-none d-md-block'>\
-        <a target='_blank' style='color:black; text-decoration:none;' href='" +
+        <a target='_blank' style='color:#FFD700; text-decoration:none;' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-        <p style='color:black;'>" +
+        <p style='color:#FFD700;'>" +
         response["articles"][i].description +
         "</p>\
       </div>\
