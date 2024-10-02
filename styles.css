@@ -1,0 +1,13 @@
+.carousel-control-prev-icon,
+.carousel-control-next-icon,
+div.carousel-indicators {
+  background-color: #778899;
+}
+/* 
+.carousel-control-prev-icon {
+  background-image: none; 
+}
+
+.carousel-control-next-icon {
+  background-image: none; 
+} */
