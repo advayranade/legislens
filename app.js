@@ -39,18 +39,19 @@ $.get(
             if (billSummary === undefined) {
               billSummary = "No summary available. ";
             }
-            if (data['bills'][i]["latestAction"]["actionDate"]){
-              var actionDate = data['bills'][i]["latestAction"]["actionDate"];
+            if (data["bills"][i]["latestAction"]["actionDate"]) {
+              var actionDate = data["bills"][i]["latestAction"]["actionDate"];
             }
-            let month = actionDate[5] + actionDate[6]
+            let month = actionDate[5] + actionDate[6];
             if (month[0] == 0) {
               month = month[1];
             }
-            let day = actionDate[8] + actionDate[9]
+            let day = actionDate[8] + actionDate[9];
             if (day[0] == 0) {
               day = day[1];
             }
-            let year = actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3]
+            let year =
+              actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3];
             actionDate = month + "/" + day + "/" + year;
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
@@ -90,11 +91,11 @@ $.get(
             $("#column-1").append(cardHtml);
             $(
               "#" +
-              data["bills"][i]["congress"] +
-              "-" +
-              data["bills"][i]["type"].toLowerCase() +
-              "-" +
-              data["bills"][i]["number"]
+                data["bills"][i]["congress"] +
+                "-" +
+                data["bills"][i]["type"].toLowerCase() +
+                "-" +
+                data["bills"][i]["number"]
             ).on("click", function (e) {
               let params = e.target.id.split("-");
               let congressNum = params[0];
@@ -134,15 +135,19 @@ function openBillModal(data) {
         coSponsorHTML = coSponsorHTML + createdHTML;
       }
       let introducedDate = data["bill"]["introducedDate"];
-      let month = introducedDate[5] + introducedDate[6]
+      let month = introducedDate[5] + introducedDate[6];
       if (month[0] == 0) {
         month = month[1];
       }
-      let day = introducedDate[8] + introducedDate[9]
+      let day = introducedDate[8] + introducedDate[9];
       if (day[0] == 0) {
         day = day[1];
       }
-      let year = introducedDate[0] + introducedDate[1] + introducedDate[2] + introducedDate[3]
+      let year =
+        introducedDate[0] +
+        introducedDate[1] +
+        introducedDate[2] +
+        introducedDate[3];
       introducedDate = month + "/" + day + "/" + year;
       if (data["bill"]["policyArea"]) {
         modalTest =
@@ -178,9 +183,9 @@ function openBillModal(data) {
       <dd class="col-sm-7">\
       <a href="https://congress.gov/bill/' +
           data["bill"].congress +
-          '/' +
+          "/" +
           data["bill"].type.toLowerCase() +
-          '/' +
+          "/" +
           data["bill"].number +
           ' " target="_blank">View</a>\
       </dd>\
@@ -226,9 +231,9 @@ function openBillModal(data) {
       <dd class="col-sm-7">\
       <a href="https://congress.gov/bill/' +
           data["bill"].congress +
-          '/' +
+          "/" +
           data["bill"].type.toLowerCase() +
-          '/' +
+          "/" +
           data["bill"].number +
           ' " target="_blank">View</a>\
       </dd>\
@@ -288,9 +293,9 @@ function openBillModal(data) {
       <dd class="col-sm-7">\
       <a href="https://congress.gov/bill/' +
       data["bill"].congress +
-      '/' +
+      "/" +
       data["bill"].type.toLowerCase() +
-      '/' +
+      "/" +
       data["bill"].number +
       ' " target="_blank">View</a>\
       </dd>\
@@ -364,8 +369,8 @@ $("#member-submit").on("click", function (e) {
               data["members"][i].district +
               "</p>\
     <a href='/member-desc.html?id=" +
-    data["members"][i].bioguideId +
-    "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+              data["members"][i].bioguideId +
+              "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
           } else {
@@ -390,8 +395,8 @@ $("#member-submit").on("click", function (e) {
               data["members"][i]["terms"]["item"][0].chamber +
               "<br/></p>\
     <a href='/member-desc.html?id=" +
-    data["members"][i].bioguideId +
-    "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+              data["members"][i].bioguideId +
+              "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
   </div>\
 </div>";
           }
