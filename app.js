@@ -327,81 +327,104 @@ $("#member-submit").on("click", function (e) {
     "https://www.googleapis.com/civicinfo/v2/representatives?address=" +
     $("#zipCode").val() +
     "&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody";
-  $.get(findMemberURL, (data) => {
-    console.log(data);
-    if (data.officials.length === 0) {
-      var memberCardHTML =
-        "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
-      $("#memberWrapper").append(memberCardHTML);
-    }
-    var officeIndex = 0;
-    for (let i = 0; i < data.officials.length; i++) {
-      debugger;
-      console.log(i);
-      memberCardHTML = "";
-      if (0 == 0) {
-        let districtIdSplit = data["offices"][1].divisionId.split(":");
-        let districtNum = districtIdSplit[districtIdSplit.length - 1];
-        let chamber = "";
-        if (data["offices"][0]["officialIndices"].includes(i)) {
-          debugger;
-          chamber = data["offices"][0].name;
-        }
-
-        if (
-          data["offices"][1] &&
-          data["offices"][1]["officialIndices"].includes(i)
-        ) {
-          debugger;
-          chamber = data["offices"][1].name;
-        }
-
-        if (chamber.toLowerCase() == "u.s. representative") {
-          memberCardHTML =
-            "<div class='card m-3' style='width: 20rem;' class='rep'" +
-            ">" +
-            "<div class='card-body'>\
-    <h5 class='card-title'>" +
-            data["officials"][i].name +
-            "</h5>\
-    <p class='card-subtitle'><b>Party:</b> " +
-            data["officials"][i].party +
-            "<br/><b>State:</b> " +
-            data["normalizedInput"].state +
-            "<br/><b>Chamber: </b>" +
-            chamber +
-            "<br/><b>District #: </b>" +
-            districtNum +
-            "</p>\
-    <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
-  </div>\
+  $.ajax({
+    type: "GET",
+    url: findMemberURL,
+    beforeSend: function () {
+      let loadingHTML =
+        "<div class='spinner-border m-3' role='status'>\
+  <span class='visually-hidden'>Loading...</span>\
 </div>";
-        } else {
-          memberCardHTML =
-            "<div class='card m-3' style='width: 20rem;' class='rep'" +
-            ">" +
-            "<div class='card-body'>\
-  <h5 class='card-title'>" +
-            data["officials"][i].name +
-            "</h5>\
-  <p class='card-subtitle'><b>Party:</b> " +
-            data["officials"][i].party +
-            "<br/><b>State:</b> " +
-            data["normalizedInput"].state +
-            "<br/><b>Chamber: </b>" +
-            chamber +
-            "<br/>" +
-            "</p>\
-  <a href='#' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
-</div>\
-</div>";
+      $("#memberWrapper").append(loadingHTML);
+    },
+    success: function (data) {
+      $("#memberWrapper").html("");
+      console.log(data);
+      if (data.officials.length === 0) {
+        var memberCardHTML =
+          "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
+        $("#memberWrapper").append(memberCardHTML);
+      }
+      var officeIndex = 0;
+      for (let i = 0; i < data.officials.length; i++) {
+        debugger;
+        console.log(i);
+        memberCardHTML = "";
+        if (0 == 0) {
+          let districtIdSplit = data["offices"][1]
+            ? data["offices"][1].divisionId.split(":")
+            : data["offices"][0].divisionId.split(":");
+          let districtNum = districtIdSplit[districtIdSplit.length - 1];
+          let chamber = "";
+          if (data["offices"][0]["officialIndices"].includes(i)) {
+            debugger;
+            chamber = data["offices"][0].name;
+          }
+
+          if (
+            data["offices"][1] &&
+            data["offices"][1]["officialIndices"].includes(i)
+          ) {
+            debugger;
+            chamber = data["offices"][1].name;
+          }
+
+          if (chamber.toLowerCase() == "u.s. representative") {
+            memberCardHTML =
+              "<div class='card m-3' style='width: 20rem;' class='rep'" +
+              ">" +
+              "<div class='card-body'>\
+        <h5 class='card-title'>" +
+              data["officials"][i].name +
+              "</h5>\
+        <p class='card-subtitle'><b>Party:</b> " +
+              data["officials"][i].party +
+              "<br/><b>State:</b> " +
+              data["normalizedInput"].state +
+              "<br/><b>Office of </b>" +
+              chamber +
+              "<br/><b>District #: </b>" +
+              districtNum +
+              "</p>\
+        <a target='_blank' href='" +
+              data["officials"][i].urls[1] +
+              "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+      </div>\
+    </div>";
+          } else {
+            memberCardHTML =
+              "<div class='card m-3' style='width: 20rem;' class='rep'" +
+              ">" +
+              "<div class='card-body'>\
+      <h5 class='card-title'>" +
+              data["officials"][i].name +
+              "</h5>\
+      <p class='card-subtitle'><b>Party:</b> " +
+              data["officials"][i].party +
+              "<br/><b>State:</b> " +
+              data["normalizedInput"].state +
+              "<br/><b>Office of </b>" +
+              chamber +
+              "<br/>" +
+              "</p>\
+      <a target='_blank' href='" +
+              data["officials"][i].urls[1] +
+              "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+    </div>\
+    </div>";
+          }
+        }
+        $("#memberWrapper").append(memberCardHTML);
+        if (officeIndex !== 1) {
+          officeIndex++;
         }
       }
-      $("#memberWrapper").append(memberCardHTML);
-      if (officeIndex !== 1) {
-        officeIndex++;
-      }
-    }
+    },
+    error: function (err) {
+      $("#memberWrapper").html("");
+      console.error(err.statusText, err);
+      alert("Error: " + err);
+    },
   });
 });
 
