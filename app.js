@@ -1,7 +1,8 @@
 var billData;
-$.get(
-  "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
-  (data) => {
+$.ajax({
+  type: "GET",
+  url: "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+  success: function (data) {
     for (let i = 0; i < data["bills"].length; i++) {
       var billSummary;
       let billInfoURL =
@@ -55,38 +56,38 @@ $.get(
             actionDate = month + "/" + day + "/" + year;
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
-            <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                <a href="/member-desc.html?id=' +
+              <div class="card-body"><div class=""><div class="d-flex align-items-center">\
+                  <a href="/member-desc.html?id=' +
               r["member"].bioguideId +
               '"><img src="' +
               sponsorImg +
               '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
-                <div>' +
+                  <div>' +
               '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
               data["bills"][i]["title"] +
               '</h5>\
-                  </div>\
-                        <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                    </div>\
+                          <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
               actionDate +
               "): " +
               data["bills"][i]["latestAction"]["text"] +
               '</small></div></div></div>\
-              <p class="card-text mt-2">' +
+                <p class="card-text mt-2">' +
               billSummary +
               '</p> \
-              <span class="badge rounded-pill text-bg-secondary">' +
+                <span class="badge rounded-pill text-bg-secondary">' +
               data["bills"][i]["originChamberCode"] +
               data["bills"][i]["number"] +
               '</span> \
-              <a id="' +
+                <a id="' +
               data["bills"][i]["congress"] +
               "-" +
               data["bills"][i]["type"].toLowerCase() +
               "-" +
               data["bills"][i]["number"] +
               '" class="btn btn-primary btn-sm ms-3">More info</a>\
-            </div> \
-          </div>';
+              </div> \
+            </div>';
 
             $("#column-1").append(cardHtml);
             $(
@@ -117,8 +118,11 @@ $.get(
         });
       });
     }
-  }
-);
+  },
+  error: function (err) {
+    console.error("ERROR: Please try again later. ", err.statusCode());
+  },
+});
 
 function openBillModal(data) {
   var coSponsorData;
@@ -429,9 +433,18 @@ $("#member-submit").on("click", function (e) {
   });
 });
 
-$.get(
-  "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
-  (response) => {
+$.ajax({
+  type: "GET",
+  url: "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
+  beforeSend: function () {
+    let loadingHTML =
+      "<div class='spinner-border m-3' role='status'>\
+<span class='visually-hidden'>Loading...</span>\
+</div>";
+    $("#carouselInner").append(loadingHTML);
+  },
+  success: function (response) {
+    $("#carouselInner").html("");
     let newsUrl;
     for (let i = 0; i < 6; i++) {
       if (i === 0) {
@@ -453,40 +466,23 @@ $.get(
         "<div class='" +
         carouselItemClassCheck +
         "'>\
-        <img style='filter: grayscale(100%) blur(10px);' src='" +
+          <img style='filter: grayscale(100%) blur(10px);' src='" +
         newsUrl +
         "' class='d-block w-100' alt='image'>\
-      <div class='carousel-caption d-none d-md-block'>\
-        <a target='_blank' style='color:#FFD700; text-decoration:none;' href='" +
+        <div class='carousel-caption d-none d-md-block'>\
+          <a target='_blank' style='color:#FFD700; text-decoration:none;' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-        <p style='color:#FFD700;'>" +
+          <p style='color:#FFD700;'>" +
         response["articles"][i].description +
         "</p>\
-        </div>\
-      </div>";
-      //       let carouselItem =
-      //         "<div class='card'>\
-      //   <img src='" +
-      //         newsUrl +
-      //         "' class='card-img-top' alt='news-image'>\
-      //   <div class='carousel-caption d-none d-md-block card-body'>\
-      //     <h5 class='card-title'>" +
-      //         response["articles"][i].title +
-      //         "</h5>\
-      //     <p class='card-text'>" +
-      //         response["articles"][i].description +
-      //         "</p>\
-      //     <a href='" +
-      //         newsUrl +
-      //         "' target='_blank' >Learn more</a>\
-      //   </div>\
-      // </div>";
+          </div>\
+        </div>";
 
       $("#carouselInner").append(carouselItem);
     }
-  }
-);
+  },
+});
 $(".carousel").dataInterval = 2000;
