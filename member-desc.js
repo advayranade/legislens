@@ -52,6 +52,7 @@ const statesAbbreviations = {
   "Wisconsin": "WI",
   "Wyoming": "WY"
 };
+
 const zipCodes={
   "ocd-division/country:us/state:ma/cd:1": "01262",
   "ocd-division/country:us/state:ma/cd:2": "01301",
@@ -232,49 +233,64 @@ $.get(
   memberID +
   "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   function (data) {
-    if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'senate') {
-      $.get(
-        "https://www.googleapis.com/civicinfo/v2/representatives?address=" +
-        data['member']["state"] +
-        "&roles=legislatorUpperBody&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg",
-        function (dataByLocation) {
-          let officials = dataByLocation.officials;
-          for (term in officials){
-            let nameByLocation = (officials[term]['name']).split(" ")
-            if ((nameByLocation[0] + " " + nameByLocation[nameByLocation.length - 1]).toLowerCase() == (data['member']['firstName'] + " " + data['member']['lastName']).toLowerCase()) {
-              let channels = officials[term]['channels']
-              var channelsHTML = "";
-              for (number in channels) {
-                let type = channels[number].type;
-                let id = channels[number].id;
-                if (type == undefined || type == null){
-                  type = "Not Found"
-                }
-                if (id == undefined || id == null){
-                  id = "Not Found"
-                }
-                let currentChannelHTML = "<b>" + type + ": </b>" + id + "<br>"
-                channelsHTML += currentChannelHTML;
+    console.log(data);
+    let zipcode = data['member']['state']
+    if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'house of representatives') {
+      let state = data['member']['state']
+      state = (statesAbbreviations[state]).toLowerCase()
+      let district;
+      if (data['member'].hasOwnProperty('district')) {
+        district = data['member']['district']
+      } else {
+        district = 'at-large'
+      }
+      let ocdID = 'ocd-division/country:us/state:' + state + '/cd:' + district
+      zipcode = zipCodes[ocdID]
+      if (!zipcode){
+        zipcode = '94087'
+      }
+    }
+    $.get(
+      "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" + zipcode,
+      function (dataByLocation) {
+        console.log(dataByLocation);
+        let officials = dataByLocation.officials;
+        var channelsHTML = "";
+        for (term in officials) {
+          let nameByLocation = (officials[term]['name']).split(" ")
+          if ((nameByLocation[0] + " " + nameByLocation[nameByLocation.length - 1]).toLowerCase() == (data['member']['firstName'] + " " + data['member']['lastName']).toLowerCase()) {
+            let channels = officials[term]['channels']
+            for (number in channels) {
+              let type = channels[number].type;
+              let id = channels[number].id;
+              if (!type) {
+                type = "Not Found"
               }
+              if (!id) {
+                id = "Not Found"
+              }
+              let currentChannelHTML = "<b>" + type + ": </b>" + "@" + id + "<br>"
+              channelsHTML += currentChannelHTML;
             }
           }
-          let memberImgTag =
-            "<img src='" +
-            data["member"]["depiction"].imageUrl +
-            "' style='width:100%'>";
-          let memberName = data["member"].directOrderName;
-          let memberInfoHtml =
-            "<b>Party: </b>" +
-            data["member"]["partyHistory"][0].partyName +
-            "<br/><b>State: </b>" +
-            data["member"].state +
-            "<br/><b>Current Chamber: </b>" +
-            data["member"]["terms"][data["member"]["terms"].length - 1].chamber +
-            "<br/><b>Website: </b><a href=" +
-            data["member"].officialWebsiteUrl +
-            " target='_blank'>" +
-            data["member"].officialWebsiteUrl +
-            "</a><br>\
+        }
+        let memberImgTag =
+          "<img src='" +
+          data["member"]["depiction"].imageUrl +
+          "' style='width:100%'>";
+        let memberName = data["member"].directOrderName;
+        let memberInfoHtml =
+          "<b>Party: </b>" +
+          data["member"]["partyHistory"][0].partyName +
+          "<br/><b>State: </b>" +
+          data["member"].state +
+          "<br/><b>Current Chamber: </b>" +
+          data["member"]["terms"][data["member"]["terms"].length - 1].chamber +
+          "<br/><b>Website: </b><a href=" +
+          data["member"].officialWebsiteUrl +
+          " target='_blank'>" +
+          data["member"].officialWebsiteUrl +
+          "</a><br>\
       <b>Phone: </b>" + data.member.addressInformation.phoneNumber + "<br>\
       <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" + 
       channelsHTML + "\
@@ -307,102 +323,100 @@ $.get(
   </div>\
 </div>";
 
-          memberInfoHtml += termHTML;
-        }
-        memberInfoHtml += "</div>";
+            memberInfoHtml += termHTML;
+          }
+          memberInfoHtml += "</div>";
 
-        $.get(
-          "https://api.congress.gov/v3/member/" +
-          memberID +
-          "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
-          function (data) {
-            let sponsoredLegislationHtml =
-              "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
-            for (legislation in data["sponsoredLegislation"]) {
-              let currentLegislation = data["sponsoredLegislation"][legislation];
-              let currentLegislationCategory = "No Category Found";
-              if (currentLegislation.hasOwnProperty("policyArea")) {
-                if (currentLegislation["policyArea"].hasOwnProperty["name"]) {
-                  currentLegislationCategory = currentLegislation["policyArea"]["name"];
-                  if (currentLegislationCategory == null) {
-                    currentLegislationCategory = "No Category Found";
-                  }
-                }
-              }
-              let currentLegislationTitle = "No Title Found";
-              if (currentLegislation.hasOwnProperty("title")) {
-                currentLegislationTitle = currentLegislation.title;
-                if (currentLegislationTitle == null) {
-                  currentLegislationTitle = "No Title Found";
-                }
-              }
-              let currentLegislationActionDate = "No Action Date Found";
-              let currentLegislationLatestAction = "No Latest Action Found";
-              if (currentLegislation.hasOwnProperty("latestAction")) {
-                if (currentLegislation["latestAction"] !== null) {
-                  if (currentLegislation["latestAction"].hasOwnProperty("actionDate")) {
-                    currentLegislationActionDate = currentLegislation["latestAction"].actionDate;
-                    if (currentLegislationActionDate == null) {
-                      currentLegislationActionDate = "No Action Date Found";
-                    } else {
-                      let month = currentLegislationActionDate[5] + currentLegislationActionDate[6]
-                      if (month[0] == 0) {
-                        month = month[1];
-                      }
-                      let day = currentLegislationActionDate[8] + currentLegislationActionDate[9]
-                      if (day[0] == 0) {
-                        day = day[1];
-                      }
-                      let year = currentLegislationActionDate[0] + currentLegislationActionDate[1] + currentLegislationActionDate[2] + currentLegislationActionDate[3]
-                      currentLegislationActionDate = month + "/" + day + "/" + year;
-                    }
-                  }
-                  if (currentLegislation["latestAction"].hasOwnProperty("text")) {
-                    currentLegislationLatestAction = currentLegislation["latestAction"].text;
-                    if (currentLegislationLatestAction == null) {
-                      currentLegislationLatestAction = "No Latest Action Found";
+          $.get(
+            "https://api.congress.gov/v3/member/" +
+            memberID +
+            "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+            function (data) {
+              let sponsoredLegislationHtml =
+                "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
+              for (legislation in data["sponsoredLegislation"]) {
+                let currentLegislation = data["sponsoredLegislation"][legislation];
+                let currentLegislationCategory = "No Category Found";
+                if (currentLegislation.hasOwnProperty("policyArea")) {
+                  if (currentLegislation["policyArea"].hasOwnProperty["name"]) {
+                    currentLegislationCategory = currentLegislation["policyArea"]["name"];
+                    if (currentLegislationCategory == null) {
+                      currentLegislationCategory = "No Category Found";
                     }
                   }
                 }
-              }
-              let newLegislationHtml =
-                "<div class = 'card my-2'>\
+                let currentLegislationTitle = "No Title Found";
+                if (currentLegislation.hasOwnProperty("title")) {
+                  currentLegislationTitle = currentLegislation.title;
+                  if (currentLegislationTitle == null) {
+                    currentLegislationTitle = "No Title Found";
+                  }
+                }
+                let currentLegislationActionDate = "No Action Date Found";
+                let currentLegislationLatestAction = "No Latest Action Found";
+                if (currentLegislation.hasOwnProperty("latestAction")) {
+                  if (currentLegislation["latestAction"] !== null) {
+                    if (currentLegislation["latestAction"].hasOwnProperty("actionDate")) {
+                      currentLegislationActionDate = currentLegislation["latestAction"].actionDate;
+                      if (currentLegislationActionDate == null) {
+                        currentLegislationActionDate = "No Action Date Found";
+                      } else {
+                        let month = currentLegislationActionDate[5] + currentLegislationActionDate[6]
+                        if (month[0] == 0) {
+                          month = month[1];
+                        }
+                        let day = currentLegislationActionDate[8] + currentLegislationActionDate[9]
+                        if (day[0] == 0) {
+                          day = day[1];
+                        }
+                        let year = currentLegislationActionDate[0] + currentLegislationActionDate[1] + currentLegislationActionDate[2] + currentLegislationActionDate[3]
+                        currentLegislationActionDate = month + "/" + day + "/" + year;
+                      }
+                    }
+                    if (currentLegislation["latestAction"].hasOwnProperty("text")) {
+                      currentLegislationLatestAction = currentLegislation["latestAction"].text;
+                      if (currentLegislationLatestAction == null) {
+                        currentLegislationLatestAction = "No Latest Action Found";
+                      }
+                    }
+                  }
+                }
+                let newLegislationHtml =
+                  "<div class = 'card my-2'>\
           <h5 class='card-header'>" +
-                currentLegislationCategory +
-                "</h5>\
+                  currentLegislationCategory +
+                  "</h5>\
             <div class='card-body'>\
               <h5 class='card-title'>" +
-                currentLegislationTitle +
-                "</h5>\
+                  currentLegislationTitle +
+                  "</h5>\
               <p class='card-text'><b>Latest Action (" +
-                currentLegislationActionDate +
-                "): </b>" +
-                currentLegislationLatestAction +
-                "\
+                  currentLegislationActionDate +
+                  "): </b>" +
+                  currentLegislationLatestAction +
+                  "\
               <br/><b>More Info: </b><a href='https://congress.gov/bill/" +
-                currentLegislation.congress +
-                "/" +
-                currentLegislation.type +
-                "/" +
-                currentLegislation.number +
-                "' target='_blank'>View</a>\
+                  currentLegislation.congress +
+                  "/" +
+                  currentLegislation.type +
+                  "/" +
+                  currentLegislation.number +
+                  "' target='_blank'>View</a>\
               </p>\
             </div>\
           </div>";
 
-              sponsoredLegislationHtml += newLegislationHtml;
+                sponsoredLegislationHtml += newLegislationHtml;
+              }
+              sponsoredLegislationHtml += "</div>";
+              $("#sponsoredLegislationHtml").append(sponsoredLegislationHtml);
             }
-            sponsoredLegislationHtml += "</div>";
-            $("#sponsoredLegislationHtml").append(sponsoredLegislationHtml);
-          }
-        );
+          );
 
-        $("#memberName").append(memberName);
-        $("#memberInfoWrapper").append(memberInfoHtml);
-        $("#memberImg").append(memberImgTag);
-      }
-    )
-  }
-}
-
+          $("#memberName").append(memberName);
+          $("#memberInfoWrapper").append(memberInfoHtml);
+          $("#memberImg").append(memberImgTag);
+        }
+      )
+    }
 );
