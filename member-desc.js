@@ -256,6 +256,7 @@ $.get(
         console.log(dataByLocation);
         let officials = dataByLocation.officials;
         var channelsHTML = "";
+        var wikipedia = "";
         for (term in officials) {
           let nameByLocation = (officials[term]['name']).split(" ")
           if ((nameByLocation[0] + " " + nameByLocation[nameByLocation.length - 1]).toLowerCase() == (data['member']['firstName'] + " " + data['member']['lastName']).toLowerCase()) {
@@ -271,6 +272,10 @@ $.get(
               }
               let currentChannelHTML = "<b>" + type + ": </b>" + "@" + id + "<br>"
               channelsHTML += currentChannelHTML;
+            }
+            let url = officials[term]['urls'][1]
+            if (url){
+              wikipedia = "<b>Wikipedia: </b><a href='" + url + "' target='_blank'>" + url + "</a><br>"
             }
           }
         }
@@ -290,8 +295,9 @@ $.get(
           data["member"].officialWebsiteUrl +
           " target='_blank'>" +
           data["member"].officialWebsiteUrl +
-          "</a><br>\
-      <b>Phone: </b>" + data.member.addressInformation.phoneNumber + "<br>\
+          "</a><br>" + 
+      wikipedia + 
+      "<b>Phone: </b>" + data.member.addressInformation.phoneNumber + "<br>\
       <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" + 
       channelsHTML + "\
       <b>Terms:</b>\
