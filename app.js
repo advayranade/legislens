@@ -470,12 +470,12 @@ $.ajax({
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
-          <a target='_blank' style='color:#FFD700; text-decoration:none;' href='" +
+          <a target='_blank' style='color:#FFD700; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:#FFD700;'>" +
+          <p style='color:#FFD700; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)'>" +
         response["articles"][i].description +
         "</p>\
           </div>\
