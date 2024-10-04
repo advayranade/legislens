@@ -1,7 +1,8 @@
 var billData;
-$.get(
-  "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
-  (data) => {
+$.ajax({
+  type: "GET",
+  url: "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+  success: function (data) {
     for (let i = 0; i < data["bills"].length; i++) {
       var billSummary;
       let billInfoURL =
@@ -55,38 +56,38 @@ $.get(
             actionDate = month + "/" + day + "/" + year;
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
-            <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                <a href="/member-desc.html?id=' +
+              <div class="card-body"><div class=""><div class="d-flex align-items-center">\
+                  <a href="/member-desc.html?id=' +
               r["member"].bioguideId +
               '"><img src="' +
               sponsorImg +
               '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
-                <div>' +
+                  <div>' +
               '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
               data["bills"][i]["title"] +
               '</h5>\
-                  </div>\
-                        <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                    </div>\
+                          <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
               actionDate +
               "): " +
               data["bills"][i]["latestAction"]["text"] +
               '</small></div></div></div>\
-              <p class="card-text mt-2">' +
+                <p class="card-text mt-2">' +
               billSummary +
               '</p> \
-              <span class="badge rounded-pill text-bg-secondary">' +
+                <span class="badge rounded-pill text-bg-secondary">' +
               data["bills"][i]["originChamberCode"] +
               data["bills"][i]["number"] +
               '</span> \
-              <a id="' +
+                <a id="' +
               data["bills"][i]["congress"] +
               "-" +
               data["bills"][i]["type"].toLowerCase() +
               "-" +
               data["bills"][i]["number"] +
               '" class="btn btn-primary btn-sm ms-3">More info</a>\
-            </div> \
-          </div>';
+              </div> \
+            </div>';
 
             $("#column-1").append(cardHtml);
             $(
@@ -117,8 +118,11 @@ $.get(
         });
       });
     }
-  }
-);
+  },
+  error: function (err) {
+    console.error("ERROR: Please try again later. ", err.statusCode());
+  },
+});
 
 function openBillModal(data) {
   var coSponsorData;
@@ -322,96 +326,125 @@ function openBillModal(data) {
 
 $("#member-submit").on("click", function (e) {
   e.preventDefault();
-  if ($("#stateCode").val() === "" || $("#districtCode").val() === "") {
-    var noValueCheck = confirm(
-      "There is no value detected in the state code and/or the district number. Due to an incomplete form, the results may be inaccurate. "
-    );
-  }
-  if (noValueCheck || noValueCheck === undefined) {
-    $("#memberWrapper").text("");
-    let findMemberURL =
-      "https://api.congress.gov/v3/member/" +
-      $("#stateCode").val() +
-      "/" +
-      $("#districtCode").val() +
-      "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-    $.get(findMemberURL, (data) => {
-      if (data["members"].length === 0) {
+  $("#memberWrapper").text("");
+  let findMemberURL =
+    "https://www.googleapis.com/civicinfo/v2/representatives?address=" +
+    $("#zipCode").val() +
+    "&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody";
+  $.ajax({
+    type: "GET",
+    url: findMemberURL,
+    beforeSend: function () {
+      let loadingHTML =
+        "<div class='spinner-border m-3' role='status'>\
+  <span class='visually-hidden'>Loading...</span>\
+</div>";
+      $("#memberWrapper").append(loadingHTML);
+    },
+    success: function (data) {
+      $("#memberWrapper").html("");
+      console.log(data);
+      if (data.officials.length === 0) {
         var memberCardHTML =
           "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
         $("#memberWrapper").append(memberCardHTML);
       }
-
-      for (let i = 0; i < data["members"].length; i++) {
+      var officeIndex = 0;
+      for (let i = 0; i < data.officials.length; i++) {
+        debugger;
+        console.log(i);
         memberCardHTML = "";
-        if (data["members"][i]["terms"]["item"][0].endYear === undefined) {
-          if (data["members"][i].district) {
+        if (0 == 0) {
+          let districtIdSplit = data["offices"][1]
+            ? data["offices"][1].divisionId.split(":")
+            : data["offices"][0].divisionId.split(":");
+          let districtNum = districtIdSplit[districtIdSplit.length - 1];
+          let chamber = "";
+          if (data["offices"][0]["officialIndices"].includes(i)) {
+            debugger;
+            chamber = data["offices"][0].name;
+          }
+
+          if (
+            data["offices"][1] &&
+            data["offices"][1]["officialIndices"].includes(i)
+          ) {
+            debugger;
+            chamber = data["offices"][1].name;
+          }
+
+          if (chamber.toLowerCase() == "u.s. representative") {
             memberCardHTML =
-              "<div class='card m-3' style='width: 20rem;' id=" +
-              data["members"][i].bioguideId +
-              ">\
-  <img src='" +
-              data["members"][i].depiction.imageUrl +
-              "' class='card-img-top'>\
-  <div class='card-body'>\
-    <h5 class='card-title'>" +
-              data["members"][i].name +
+              "<div class='card m-3' style='width: 20rem;' class='rep'" +
+              ">" +
+              "<div class='card-body'>\
+        <h5 class='card-title'>" +
+              data["officials"][i].name +
               "</h5>\
-    <p class='card-subtitle'><b>Party:</b> " +
-              data["members"][i].partyName +
+        <p class='card-subtitle'><b>Party:</b> " +
+              data["officials"][i].party +
               "<br/><b>State:</b> " +
-              data["members"][i].state +
-              "<br/><b>Term Start:</b> " +
-              data["members"][i]["terms"]["item"][0].startYear +
-              "<br/><b>Chamber: </b>" +
-              data["members"][i]["terms"]["item"][0].chamber +
+              data["normalizedInput"].state +
+              "<br/><b>Office of </b>" +
+              chamber +
               "<br/><b>District #: </b>" +
-              data["members"][i].district +
+              districtNum +
               "</p>\
-    <a href='/member-desc.html?id=" +
-              data["members"][i].bioguideId +
+        <a target='_blank' href='" +
+              data["officials"][i].urls[1] +
               "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
-  </div>\
-</div>";
+      </div>\
+    </div>";
           } else {
             memberCardHTML =
-              "<div class='card m-3' style='width: 20rem;' id=" +
-              data["members"][i].bioguideId +
-              ">\
-  <img src='" +
-              data["members"][i].depiction.imageUrl +
-              "' class='card-img-top'>\
-  <div class='card-body'>\
-    <h5 class='card-title'>" +
-              data["members"][i].name +
+              "<div class='card m-3' style='width: 20rem;' class='rep'" +
+              ">" +
+              "<div class='card-body'>\
+      <h5 class='card-title'>" +
+              data["officials"][i].name +
               "</h5>\
-    <p class='card-subtitle'><b>Party:</b> " +
-              data["members"][i].partyName +
+      <p class='card-subtitle'><b>Party:</b> " +
+              data["officials"][i].party +
               "<br/><b>State:</b> " +
-              data["members"][i].state +
-              "<br/><b>Term Start:</b> " +
-              data["members"][i]["terms"]["item"][0].startYear +
-              "<br/><b>Chamber: </b>" +
-              data["members"][i]["terms"]["item"][0].chamber +
-              "<br/></p>\
-    <a href='/member-desc.html?id=" +
-              data["members"][i].bioguideId +
+              data["normalizedInput"].state +
+              "<br/><b>Office of </b>" +
+              chamber +
+              "<br/>" +
+              "</p>\
+      <a target='_blank' href='" +
+              data["officials"][i].urls[1] +
               "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
-  </div>\
-</div>";
+    </div>\
+    </div>";
           }
         }
         $("#memberWrapper").append(memberCardHTML);
+        if (officeIndex !== 1) {
+          officeIndex++;
+        }
       }
-    });
-  } else {
-    return;
-  }
+    },
+    error: function (err) {
+      $("#memberWrapper").html(
+        "<h5 class='my-2'>This zip code/address is invalid. Please try again.</h5>"
+      );
+      console.error(err.statusText, err);
+    },
+  });
 });
 
-$.get(
-  "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
-  (response) => {
+$.ajax({
+  type: "GET",
+  url: "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
+  beforeSend: function () {
+    let loadingHTML =
+      "<div class='spinner-border m-3' role='status'>\
+<span class='visually-hidden'>Loading...</span>\
+</div>";
+    $("#carouselInner").append(loadingHTML);
+  },
+  success: function (response) {
+    $("#carouselInner").html("");
     let newsUrl;
     for (let i = 0; i < 6; i++) {
       if (i === 0) {
@@ -433,40 +466,23 @@ $.get(
         "<div class='" +
         carouselItemClassCheck +
         "'>\
-        <img style='filter: grayscale(100%) blur(10px);' src='" +
+          <img style='filter: grayscale(100%) blur(10px);' src='" +
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
-          <a target='_blank' style='color:#A0B6C6; text-decoration:none;' href='" +
+          <a target='_blank' style='color:#FFD700; text-decoration:none;' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:#A0B6C6;'>" +
+          <p style='color:#FFD700;'>" +
         response["articles"][i].description +
         "</p>\
-        </div>\
-      </div>";
-      //       let carouselItem =
-      //         "<div class='card'>\
-      //   <img src='" +
-      //         newsUrl +
-      //         "' class='card-img-top' alt='news-image'>\
-      //   <div class='carousel-caption d-none d-md-block card-body'>\
-      //     <h5 class='card-title'>" +
-      //         response["articles"][i].title +
-      //         "</h5>\
-      //     <p class='card-text'>" +
-      //         response["articles"][i].description +
-      //         "</p>\
-      //     <a href='" +
-      //         newsUrl +
-      //         "' target='_blank' >Learn more</a>\
-      //   </div>\
-      // </div>";
+          </div>\
+        </div>";
 
       $("#carouselInner").append(carouselItem);
     }
-  }
-);
+  },
+});
 $(".carousel").dataInterval = 2000;
