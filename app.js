@@ -452,16 +452,13 @@ $.ajax({
       } else {
         var carouselItemClassCheck = "carousel-item";
       }
-
-      // https://www.shutterstock.com/image-vector/newspaper-line-vector-illustration-isolated-600nw-1928795186.jpg
-
       if (response["articles"][i].urlToImage) {
         newsUrl = response["articles"][i].urlToImage;
       } else {
         newsUrl =
           "https://www.shutterstock.com/image-vector/newspaper-line-vector-illustration-isolated-600nw-1928795186.jpg";
       }
-
+      let color = '#F7F5F5'
       let carouselItem =
         "<div class='" +
         carouselItemClassCheck +
@@ -470,12 +467,12 @@ $.ajax({
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
-          <a target='_blank' style='color:#FFD700; text-decoration:none;' href='" +
+          <a target='_blank' style='color:" + color + "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:#FFD700;'>" +
+          <p style='color:" + color + "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)'>" +
         response["articles"][i].description +
         "</p>\
           </div>\
