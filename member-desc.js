@@ -233,7 +233,6 @@ $.get(
   memberID +
   "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   function (data) {
-    console.log(data);
     let zipcode = data['member']['state']
     if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'house of representatives') {
       let state = data['member']['state']
@@ -253,7 +252,6 @@ $.get(
     $.get(
       "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" + zipcode,
       function (dataByLocation) {
-        console.log(dataByLocation);
         let officials = dataByLocation.officials;
         var channelsHTML = "";
         var wikipedia = "";
