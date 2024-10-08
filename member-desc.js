@@ -299,7 +299,7 @@ $.get(
       <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" + 
       channelsHTML + "\
       <b>Terms:</b>\
-      <div style='overflow-y: auto; height: 30rem;'>";
+      <div style='overflow-y: auto; height: 32.5rem;'>";
           for (term in data["member"].terms) {
             let termArray = data["member"]["terms"];
             let currentTerm = termArray[termArray.length - term - 1];
