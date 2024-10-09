@@ -472,7 +472,7 @@ $.ajax({
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:" + color + "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)'>" +
+          <p style='color:" + color + "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text'>" +
         response["articles"][i].description +
         "</p>\
           </div>\

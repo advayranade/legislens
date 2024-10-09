@@ -290,9 +290,14 @@ $.get(
                 "<b>" + type + ": </b>" + "@" + id + "<br>";
               channelsHTML += currentChannelHTML;
             }
-            let url = officials[term]['urls'][1]
-            if (url){
-              wikipedia = "<b>Wikipedia: </b><a href='" + url + "' target='_blank'>" + url + "</a><br>"
+            let url = officials[term]["urls"][1];
+            if (url) {
+              wikipedia =
+                "<b>Wikipedia: </b><a href='" +
+                url +
+                "' target='_blank'>" +
+                "Wikipedia" +
+                "</a><br>";
             }
           }
         }
@@ -313,11 +318,16 @@ $.get(
           data["member"].officialWebsiteUrl +
           " target='_blank'>" +
           data["member"].officialWebsiteUrl +
-          "</a><br>" + 
-      wikipedia + 
-      "<b>Phone: </b>" + data.member.addressInformation.phoneNumber + "<br>\
-      <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" + 
-      channelsHTML + "\
+          "</a><br>" +
+          wikipedia +
+          "<b>Phone: </b>" +
+          data.member.addressInformation.phoneNumber +
+          "<br>\
+      <b>Office Address: </b>" +
+          data.member.addressInformation.officeAddress +
+          "<br>" +
+          channelsHTML +
+          "\
       <b>Terms:</b>\
       <div style='overflow-y: auto; height: 32.5rem;'>";
         for (term in data["member"].terms) {

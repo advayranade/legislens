@@ -3,11 +3,10 @@
 div.carousel-indicators {
   background-color: #778899;
 }
-/* 
-.carousel-control-prev-icon {
-  background-image: none; 
-}
 
-.carousel-control-next-icon {
-  background-image: none; 
-} */
+.limited-text {
+  width: 350px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
