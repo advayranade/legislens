@@ -294,7 +294,7 @@ $.get(
                 "<b>Wikipedia: </b><a href='" +
                 url +
                 "' target='_blank'>" +
-                url +
+                "Wikipedia" +
                 "</a><br>";
             }
           }
