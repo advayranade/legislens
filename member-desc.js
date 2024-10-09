@@ -233,15 +233,10 @@ $.get(
     memberID +
     "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   function (data) {
-    console.log(data);
-    let zipcode = data["member"]["state"];
-    if (
-      data["member"]["terms"][data["member"]["terms"].length - 1][
-        "chamber"
-      ].toLowerCase() == "house of representatives"
-    ) {
-      let state = data["member"]["state"];
-      state = statesAbbreviations[state].toLowerCase();
+    let zipcode = data['member']['state']
+    if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'house of representatives') {
+      let state = data['member']['state']
+      state = (statesAbbreviations[state]).toLowerCase()
       let district;
       if (data["member"].hasOwnProperty("district")) {
         district = data["member"]["district"];
@@ -258,7 +253,6 @@ $.get(
       "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" +
         zipcode,
       function (dataByLocation) {
-        console.log(dataByLocation);
         let officials = dataByLocation.officials;
         var channelsHTML = "";
         var wikipedia = "";
@@ -320,16 +314,16 @@ $.get(
       channelsHTML + "\
       <b>Terms:</b>\
       <div style='overflow-y: auto; height: 32.5rem;'>";
-        for (term in data["member"].terms) {
-          let termArray = data["member"]["terms"];
-          let currentTerm = termArray[termArray.length - term - 1];
-          if (currentTerm.endYear) {
-            var endYearVariable = currentTerm.endYear;
-          } else {
-            var endYearVariable = "Present";
-          }
-          let termHTML =
-            "<div class='card my-2'>\
+          for (term in data["member"].terms) {
+            let termArray = data["member"]["terms"];
+            let currentTerm = termArray[termArray.length - term - 1];
+            if (currentTerm.endYear) {
+              var endYearVariable = currentTerm.endYear;
+            } else {
+              var endYearVariable = "Present";
+            }
+            let termHTML =
+              "<div class='card my-2'>\
   <h5 class='card-header'>" +
             currentTerm.startYear +
             " - " +
