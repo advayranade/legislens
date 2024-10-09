@@ -233,10 +233,14 @@ $.get(
     memberID +
     "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   function (data) {
-    let zipcode = data['member']['state']
-    if (data['member']['terms'][(data['member']['terms'].length) - 1]['chamber'].toLowerCase() == 'house of representatives') {
-      let state = data['member']['state']
-      state = (statesAbbreviations[state]).toLowerCase()
+    let zipcode = data["member"]["state"];
+    if (
+      data["member"]["terms"][data["member"]["terms"].length - 1][
+        "chamber"
+      ].toLowerCase() == "house of representatives"
+    ) {
+      let state = data["member"]["state"];
+      state = statesAbbreviations[state].toLowerCase();
       let district;
       if (data["member"].hasOwnProperty("district")) {
         district = data["member"]["district"];
@@ -284,9 +288,14 @@ $.get(
                 "<b>" + type + ": </b>" + "@" + id + "<br>";
               channelsHTML += currentChannelHTML;
             }
-            let url = officials[term]['urls'][1]
-            if (url){
-              wikipedia = "<b>Wikipedia: </b><a href='" + url + "' target='_blank'>" + url + "</a><br>"
+            let url = officials[term]["urls"][1];
+            if (url) {
+              wikipedia =
+                "<b>Wikipedia: </b><a href='" +
+                url +
+                "' target='_blank'>" +
+                url +
+                "</a><br>";
             }
           }
         }
@@ -307,23 +316,28 @@ $.get(
           data["member"].officialWebsiteUrl +
           " target='_blank'>" +
           data["member"].officialWebsiteUrl +
-          "</a><br>" + 
-      wikipedia + 
-      "<b>Phone: </b>" + data.member.addressInformation.phoneNumber + "<br>\
-      <b>Office Address: </b>" + data.member.addressInformation.officeAddress + "<br>" + 
-      channelsHTML + "\
+          "</a><br>" +
+          wikipedia +
+          "<b>Phone: </b>" +
+          data.member.addressInformation.phoneNumber +
+          "<br>\
+      <b>Office Address: </b>" +
+          data.member.addressInformation.officeAddress +
+          "<br>" +
+          channelsHTML +
+          "\
       <b>Terms:</b>\
       <div style='overflow-y: auto; height: 32.5rem;'>";
-          for (term in data["member"].terms) {
-            let termArray = data["member"]["terms"];
-            let currentTerm = termArray[termArray.length - term - 1];
-            if (currentTerm.endYear) {
-              var endYearVariable = currentTerm.endYear;
-            } else {
-              var endYearVariable = "Present";
-            }
-            let termHTML =
-              "<div class='card my-2'>\
+        for (term in data["member"].terms) {
+          let termArray = data["member"]["terms"];
+          let currentTerm = termArray[termArray.length - term - 1];
+          if (currentTerm.endYear) {
+            var endYearVariable = currentTerm.endYear;
+          } else {
+            var endYearVariable = "Present";
+          }
+          let termHTML =
+            "<div class='card my-2'>\
   <h5 class='card-header'>" +
             currentTerm.startYear +
             " - " +
