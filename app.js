@@ -342,10 +342,26 @@ $("#member-submit").on("click", function (e) {
       $("#memberWrapper").append(loadingHTML);
     },
     success: function (data) {
+      let district = "";
+      let divisions = Object.keys(data.divisions);
+      for (let division in divisions){
+        let currentDivision = divisions[division];
+        let splitBySlash = currentDivision.split('/')
+        let lastElement = splitBySlash[splitBySlash.length - 1];
+        let splitByColen = lastElement.split(':');
+        if (splitByColen[0] == 'cd'){
+          district = splitByColen[1];
+          secondLastSlash = (splitBySlash[splitBySlash.length - 2])
+          let splitSecondByColen = secondLastSlash.split(":");
+          var state = splitSecondByColen[1];
+          console.log('state: ',state)
+          console.log('district: ',district)
+        }
+      }
       $.get(
-        "https://api.congress.gov/v3/member/CA/17?format=json&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+        "https://api.congress.gov/v3/member/" + state + "/" + district + "?format=json&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
         function (allMembersData) {
-          $("#memberWrapper").html("");
+          $("#memberWrapper");
           if (data.officials.length === 0) {
             var memberCardHTML =
               "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
@@ -485,7 +501,7 @@ $.ajax({
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
-          <a target='_blank' style='color:" + color + "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' href='" +
+          <a target='_blank' style='color:" + color + "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
