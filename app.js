@@ -57,7 +57,7 @@ $.ajax({
             let cardHtml =
               '<div class="card m-3" style="width: auto"> \
               <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                  <a href="/member-desc.html?id=' +
+                  <a href="/legislens//member-desc.html?id=' +
               r["member"].bioguideId +
               '"><img src="' +
               sponsorImg +
@@ -92,11 +92,11 @@ $.ajax({
             $("#column-1").append(cardHtml);
             $(
               "#" +
-              data["bills"][i]["congress"] +
-              "-" +
-              data["bills"][i]["type"].toLowerCase() +
-              "-" +
-              data["bills"][i]["number"]
+                data["bills"][i]["congress"] +
+                "-" +
+                data["bills"][i]["type"].toLowerCase() +
+                "-" +
+                data["bills"][i]["number"]
             ).on("click", function (e) {
               let params = e.target.id.split("-");
               let congressNum = params[0];
@@ -356,19 +356,24 @@ $("#member-submit").on("click", function (e) {
           for (let i = 0; i < data.officials.length; i++) {
             for (let member in members) {
               let currentMember = members[member];
-              let currentMemberName = currentMember.name
+              let currentMemberName = currentMember.name;
               let newMemberName = "";
               for (let character of currentMemberName) {
-                  if (character !== "," && character !== ".") {
-                      newMemberName += character;
-                  }
+                if (character !== "," && character !== ".") {
+                  newMemberName += character;
+                }
               }
-              let currentMemberNameArray = newMemberName.split(" ")
-              let congressGovMemberName = currentMemberNameArray[1] + " " + currentMemberNameArray[0]
-              let civicAPIMemberNameArray = (data['officials'][i]['name']).split(" ")
-              let civicAPIMemberName = civicAPIMemberNameArray[0] + " " + civicAPIMemberNameArray[(civicAPIMemberNameArray.length) - 1]
-              if (congressGovMemberName == civicAPIMemberName){
-                var bioguideID = currentMember['bioguideId'];
+              let currentMemberNameArray = newMemberName.split(" ");
+              let congressGovMemberName =
+                currentMemberNameArray[1] + " " + currentMemberNameArray[0];
+              let civicAPIMemberNameArray =
+                data["officials"][i]["name"].split(" ");
+              let civicAPIMemberName =
+                civicAPIMemberNameArray[0] +
+                " " +
+                civicAPIMemberNameArray[civicAPIMemberNameArray.length - 1];
+              if (congressGovMemberName == civicAPIMemberName) {
+                var bioguideID = currentMember["bioguideId"];
               }
             }
             memberCardHTML = "";
@@ -406,9 +411,9 @@ $("#member-submit").on("click", function (e) {
                   "<br/><b>District #: </b>" +
                   districtNum +
                   "</p>\
-        <a  href='/member-desc.html?id=" +
-        bioguideID +
-        "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+        <a  href='/legislens/member-desc.html?id=" +
+                  bioguideID +
+                  "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
       </div>\
     </div>";
               } else {
@@ -440,7 +445,7 @@ $("#member-submit").on("click", function (e) {
             }
           }
         }
-      )
+      );
     },
     error: function (err) {
       $("#memberWrapper").html(
@@ -476,7 +481,7 @@ $.ajax({
         newsUrl =
           "https://www.shutterstock.com/image-vector/newspaper-line-vector-illustration-isolated-600nw-1928795186.jpg";
       }
-      let color = '#F7F5F5'
+      let color = "#F7F5F5";
       let carouselItem =
         "<div class='" +
         carouselItemClassCheck +
@@ -485,12 +490,16 @@ $.ajax({
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
-          <a target='_blank' style='color:" + color + "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' href='" +
+          <a target='_blank' style='color:" +
+        color +
+        "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:" + color + "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text'>" +
+          <p style='color:" +
+        color +
+        "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text'>" +
         response["articles"][i].description +
         "</p>\
           </div>\
