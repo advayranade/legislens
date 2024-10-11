@@ -92,11 +92,11 @@ $.ajax({
             $("#column-1").append(cardHtml);
             $(
               "#" +
-              data["bills"][i]["congress"] +
-              "-" +
-              data["bills"][i]["type"].toLowerCase() +
-              "-" +
-              data["bills"][i]["number"]
+                data["bills"][i]["congress"] +
+                "-" +
+                data["bills"][i]["type"].toLowerCase() +
+                "-" +
+                data["bills"][i]["number"]
             ).on("click", function (e) {
               let params = e.target.id.split("-");
               let congressNum = params[0];
@@ -344,22 +344,26 @@ $("#member-submit").on("click", function (e) {
     success: function (data) {
       let district = "";
       let divisions = Object.keys(data.divisions);
-      for (let division in divisions){
+      for (let division in divisions) {
         let currentDivision = divisions[division];
-        let splitBySlash = currentDivision.split('/')
+        let splitBySlash = currentDivision.split("/");
         let lastElement = splitBySlash[splitBySlash.length - 1];
-        let splitByColen = lastElement.split(':');
-        if (splitByColen[0] == 'cd'){
+        let splitByColen = lastElement.split(":");
+        if (splitByColen[0] == "cd") {
           district = splitByColen[1];
-          secondLastSlash = (splitBySlash[splitBySlash.length - 2])
+          secondLastSlash = splitBySlash[splitBySlash.length - 2];
           let splitSecondByColen = secondLastSlash.split(":");
           var state = splitSecondByColen[1];
-          console.log('state: ',state)
-          console.log('district: ',district)
+          console.log("state: ", state);
+          console.log("district: ", district);
         }
       }
       $.get(
-        "https://api.congress.gov/v3/member/" + state + "/" + district + "?format=json&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+        "https://api.congress.gov/v3/member/" +
+          state +
+          "/" +
+          district +
+          "?format=json&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
         function (allMembersData) {
           $("#memberWrapper");
           if (data.officials.length === 0) {
@@ -372,19 +376,24 @@ $("#member-submit").on("click", function (e) {
           for (let i = 0; i < data.officials.length; i++) {
             for (let member in members) {
               let currentMember = members[member];
-              let currentMemberName = currentMember.name
+              let currentMemberName = currentMember.name;
               let newMemberName = "";
               for (let character of currentMemberName) {
-                  if (character !== "," && character !== ".") {
-                      newMemberName += character;
-                  }
+                if (character !== "," && character !== ".") {
+                  newMemberName += character;
+                }
               }
-              let currentMemberNameArray = newMemberName.split(" ")
-              let congressGovMemberName = currentMemberNameArray[1] + " " + currentMemberNameArray[0]
-              let civicAPIMemberNameArray = (data['officials'][i]['name']).split(" ")
-              let civicAPIMemberName = civicAPIMemberNameArray[0] + " " + civicAPIMemberNameArray[(civicAPIMemberNameArray.length) - 1]
-              if (congressGovMemberName == civicAPIMemberName){
-                var bioguideID = currentMember['bioguideId'];
+              let currentMemberNameArray = newMemberName.split(" ");
+              let congressGovMemberName =
+                currentMemberNameArray[1] + " " + currentMemberNameArray[0];
+              let civicAPIMemberNameArray =
+                data["officials"][i]["name"].split(" ");
+              let civicAPIMemberName =
+                civicAPIMemberNameArray[0] +
+                " " +
+                civicAPIMemberNameArray[civicAPIMemberNameArray.length - 1];
+              if (congressGovMemberName == civicAPIMemberName) {
+                var bioguideID = currentMember["bioguideId"];
               }
             }
             memberCardHTML = "";
@@ -423,8 +432,8 @@ $("#member-submit").on("click", function (e) {
                   districtNum +
                   "</p>\
         <a  href='/member-desc.html?id=" +
-        bioguideID +
-        "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
+                  bioguideID +
+                  "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
       </div>\
     </div>";
               } else {
@@ -456,7 +465,7 @@ $("#member-submit").on("click", function (e) {
             }
           }
         }
-      )
+      );
     },
     error: function (err) {
       $("#memberWrapper").html(
@@ -492,7 +501,7 @@ $.ajax({
         newsUrl =
           "https://www.shutterstock.com/image-vector/newspaper-line-vector-illustration-isolated-600nw-1928795186.jpg";
       }
-      let color = '#F7F5F5'
+      let color = "#F7F5F5";
       let carouselItem =
         "<div class='" +
         carouselItemClassCheck +
@@ -501,12 +510,16 @@ $.ajax({
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
-          <a target='_blank' style='color:" + color + "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text' href='" +
+          <a target='_blank' style='color:" +
+        color +
+        "; text-decoration:none; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' href='" +
         response["articles"][i].url +
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:" + color + "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text'>" +
+          <p style='color:" +
+        color +
+        "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text'>" +
         response["articles"][i].description +
         "</p>\
           </div>\
