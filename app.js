@@ -1,4 +1,14 @@
 var billData;
+
+/*  
+HOW TO USE LOCAL JSON FILE IN JS
+
+fetch("./bioGuideIds.json") 
+        .then((response) => {
+          console.log(response.json())
+          
+          })
+*/
 $.ajax({
   type: "GET",
   url: "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",

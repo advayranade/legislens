@@ -233,26 +233,31 @@ $.get(
     memberID +
     "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   function (data) {
-    let zipcode = data["member"]["state"];
-    if (
-      data["member"]["terms"][data["member"]["terms"].length - 1][
-        "chamber"
-      ].toLowerCase() == "house of representatives"
-    ) {
-      let state = data["member"]["state"];
-      state = statesAbbreviations[state].toLowerCase();
-      let district;
-      if (data["member"].hasOwnProperty("district")) {
-        district = data["member"]["district"];
-      } else {
-        district = "at-large";
+    try {
+      var zipcode = data["member"]["state"];
+      if (
+        data["member"]["terms"][data["member"]["terms"].length - 1][
+          "chamber"
+        ].toLowerCase() == "house of representatives"
+      ) {
+        let state = data["member"]["state"];
+        state = statesAbbreviations[state].toLowerCase();
+        let district;
+        if (data["member"].hasOwnProperty("district")) {
+          district = data["member"]["district"];
+        } else {
+          district = "at-large";
+        }
+        let ocdID = "ocd-division/country:us/state:" + state + "/cd:" + district;
+        zipcode = zipCodes[ocdID];
+        if (!zipcode) {
+          zipcode = "94087";
+        }
       }
-      let ocdID = "ocd-division/country:us/state:" + state + "/cd:" + district;
-      zipcode = zipCodes[ocdID];
-      if (!zipcode) {
-        zipcode = "94087";
-      }
+    } catch (error) {
+      zipcode = "94087";
     }
+    
     $.get(
       "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" +
         zipcode,
@@ -300,6 +305,24 @@ $.get(
           }
         }
         document.title = data["member"].directOrderName;
+        let phoneNumber;
+        let officeAddress;
+        if (data.hasOwnProperty("member")) {
+          if (data.member.hasOwnProperty("addressInformation")) {
+            if (data.member.addressInformation.hasOwnProperty("phoneNumber")) {
+              phoneNumber = data.member.addressInformation.phoneNumber;
+              if (!phoneNumber){
+                phoneNumber = "Not Found";
+              }
+            }
+            if (data.member.addressInformation.hasOwnProperty("officeAddress")){
+              officeAddress = data.member.addressInformation.officeAddress;
+              if (!officeAddress){
+                officeAddress = "Not Found";
+              }
+            }
+          }
+        }
         let memberImgTag =
           "<img src='" +
           data["member"]["depiction"].imageUrl +
@@ -319,10 +342,10 @@ $.get(
           "</a><br>" +
           wikipedia +
           "<b>Phone: </b>" +
-          data.member.addressInformation.phoneNumber +
+          phoneNumber +
           "<br>\
       <b>Office Address: </b>" +
-          data.member.addressInformation.officeAddress +
+          officeAddress +
           "<br>" +
           channelsHTML +
           "\
