@@ -10,3 +10,24 @@ div.carousel-indicators {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.nav {
+  display: flex;
+  justify-content: left;
+}
+
+#top-bills {
+  overflow-y: auto;
+  height: 45rem;
+}
+
+#memberWrapper {
+  overflow-y: auto;
+  height: 15rem;
+  width: 25rem;
+}
+
+.news-desc {
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  color: #f7f5f5;
+}

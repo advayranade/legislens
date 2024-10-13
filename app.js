@@ -2498,8 +2498,8 @@ var bioguideIdByName = {
   "Thomas Foley": "F000239",
   "Mark Foley": "F000238",
   "Thomas Foglietta": "F000235",
-  "John Flynt": "F000229"
-}
+  "John Flynt": "F000229",
+};
 
 $.ajax({
   type: "GET",
@@ -2594,11 +2594,11 @@ $.ajax({
             $("#column-1").append(cardHtml);
             $(
               "#" +
-              data["bills"][i]["congress"] +
-              "-" +
-              data["bills"][i]["type"].toLowerCase() +
-              "-" +
-              data["bills"][i]["number"]
+                data["bills"][i]["congress"] +
+                "-" +
+                data["bills"][i]["type"].toLowerCase() +
+                "-" +
+                data["bills"][i]["number"]
             ).on("click", function (e) {
               let params = e.target.id.split("-");
               let congressNum = params[0];
@@ -2844,23 +2844,22 @@ $("#member-submit").on("click", function (e) {
       $("#memberWrapper").append(loadingHTML);
     },
     success: function (data) {
-      $("#memberWrapper");
+      $("#memberWrapper").html("");
       if (data.officials.length === 0) {
         var memberCardHTML =
-          "<h5 class='mt-3'>This state or district is invalid. Please try again.</h5>";
+          "<h5 class='d-inline-flex mt-3 px-2 py-1 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2'>This state or district is invalid. Please try again.</h5>";
         $("#memberWrapper").append(memberCardHTML);
       }
       var officeIndex = 0;
       for (let i = 0; i < data.officials.length; i++) {
-        let civicAPIMemberNameArray =
-          data["officials"][i]["name"].split(" ");
+        let civicAPIMemberNameArray = data["officials"][i]["name"].split(" ");
         let civicAPIMemberName =
           civicAPIMemberNameArray[0] +
           " " +
           civicAPIMemberNameArray[civicAPIMemberNameArray.length - 1];
-          console.log(civicAPIMemberName);
-          let bioguideID = bioguideIdByName[civicAPIMemberName];
-          console.log(bioguideIdByName[civicAPIMemberName])
+        console.log(civicAPIMemberName);
+        let bioguideID = bioguideIdByName[civicAPIMemberName];
+        console.log(bioguideIdByName[civicAPIMemberName]);
         memberCardHTML = "";
         if (0 == 0) {
           let districtIdSplit = data["offices"][1]
@@ -2929,11 +2928,11 @@ $("#member-submit").on("click", function (e) {
           officeIndex++;
         }
       }
-
     },
     error: function (err) {
+      $("#memberWrapper").html("");
       $("#memberWrapper").html(
-        "<h5 class='my-2'>This zip code/address is invalid. Please try again.</h5>"
+        "<h5 class='d-inline-flex mt-3 px-2 py-1 text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2'>This zip code/address is invalid. Please try again.</h5>"
       );
       console.error(err.statusText, err);
     },
@@ -2970,7 +2969,7 @@ $.ajax({
         "<div class='" +
         carouselItemClassCheck +
         "'>\
-          <img style='filter: grayscale(100%) blur(10px);' src='" +
+          <img style='filter: grayscale(100%) blur(1px);' src='" +
         newsUrl +
         "' class='d-block w-100' alt='image'>\
         <div class='carousel-caption d-none d-md-block'>\
@@ -2981,9 +2980,7 @@ $.ajax({
         "'><h5 st >" +
         response["articles"][i].title +
         "</h5></a>\
-          <p style='color:" +
-        color +
-        "; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5)' class='limited-text'>" +
+          <p class='news-desc limited-text'>" +
         response["articles"][i].description +
         "</p>\
           </div>\
