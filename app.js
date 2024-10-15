@@ -2630,6 +2630,38 @@ function openBillModal(data) {
   var coSponsorData;
   var modalTest = "";
   var coSponsorHTML = "<ul>";
+  var policyArea = "No Policy Area Found"
+  if (data['bill'].hasOwnProperty("policyArea")) {
+    if (data['bill']['policyArea'].hasOwnProperty('name')){
+      policyArea = data['bill']['policyArea']['name']
+      if (!policyArea){
+        policyArea = "No Policy Area Found"
+      }
+    }
+  }
+  var introducedDate = "No Introduced Date Found";
+      if (data['bill'].hasOwnProperty('introducedDate')){
+        introducedDate = data["bill"]["introducedDate"];
+        if (!introducedDate){
+          introducedDate = "No Introduced Date Found";
+        } else {
+          let month = introducedDate[5] + introducedDate[6];
+          if (month[0] == 0) {
+            month = month[1];
+          }
+          let day = introducedDate[8] + introducedDate[9];
+          if (day[0] == 0) {
+            day = day[1];
+          }
+          let year =
+            introducedDate[0] +
+            introducedDate[1] +
+            introducedDate[2] +
+            introducedDate[3];
+          introducedDate = month + "/" + day + "/" + year;
+        }
+        
+      }
   if (data["bill"]["cosponsors"]) {
     var coSponsorURL =
       data["bill"]["cosponsors"].url +
@@ -2640,21 +2672,8 @@ function openBillModal(data) {
         let createdHTML = "<li>" + coSponsorName + "</li>";
         coSponsorHTML = coSponsorHTML + createdHTML;
       }
-      let introducedDate = data["bill"]["introducedDate"];
-      let month = introducedDate[5] + introducedDate[6];
-      if (month[0] == 0) {
-        month = month[1];
-      }
-      let day = introducedDate[8] + introducedDate[9];
-      if (day[0] == 0) {
-        day = day[1];
-      }
-      let year =
-        introducedDate[0] +
-        introducedDate[1] +
-        introducedDate[2] +
-        introducedDate[3];
-      introducedDate = month + "/" + day + "/" + year;
+      
+      
       if (data["bill"]["policyArea"]) {
         modalTest =
           '<div class="modal" role="dialog" id="myModal">\
@@ -2793,7 +2812,7 @@ function openBillModal(data) {
       '</dd>\
       <dt class="col-sm-4">Policy Area</dt>\
       <dd class="col-sm-7">' +
-      data["bill"]["policyArea"].name +
+      policyArea +
       '</dd>\
       <dt class="col-sm-4">More Info</dt>\
       <dd class="col-sm-7">\
@@ -2806,7 +2825,7 @@ function openBillModal(data) {
       ' " target="_blank">View</a>\
       </dd>\
       <dt class="col-sm-4">Co-Sponsors</dt>\
-      <dd class="col-sm-7">NO COSPONSORS</dd>\
+      <dd class="col-sm-7">No Cosponsors Found</dd>\
     </dl>\
     <div class="collapse" id="coSponsorsList"><div class="card card-body" style="text-decoration:underline;">NO COSPONSORS' +
       '</ul></div></div></div>\
@@ -2857,9 +2876,7 @@ $("#member-submit").on("click", function (e) {
           civicAPIMemberNameArray[0] +
           " " +
           civicAPIMemberNameArray[civicAPIMemberNameArray.length - 1];
-        console.log(civicAPIMemberName);
         let bioguideID = bioguideIdByName[civicAPIMemberName];
-        console.log(bioguideIdByName[civicAPIMemberName]);
         memberCardHTML = "";
         if (0 == 0) {
           let districtIdSplit = data["offices"][1]
