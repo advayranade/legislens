@@ -2578,8 +2578,8 @@ $.ajax({
               }
   
               if (billSummary === undefined) {
-                color1 = '#80B0FF'
-                color2 = '#FF96B1'
+                color1 = '#6090FF'
+                color2 = '#FF76A1'
                 for (let bill in response){
                   let currentBill = response[bill];
                   if (currentBill['billNumber'] == data['bills'][i]['number']){
