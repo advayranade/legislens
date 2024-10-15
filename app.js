@@ -2529,6 +2529,8 @@ $.ajax({
       let response = JSON.parse(cleanedResponseString)
       for (let i = 0; i < data["bills"].length; i++) {
         var billSummary;
+        var color1 = '#000000'
+        var color2 = '#000000'
         let billInfoURL =
           "https://api.congress.gov/v3/bill/" +
           data["bills"][i]["congress"] +
@@ -2576,6 +2578,8 @@ $.ajax({
               }
   
               if (billSummary === undefined) {
+                color1 = '#80B0FF'
+                color2 = '#FF96B1'
                 for (let bill in response){
                   let currentBill = response[bill];
                   if (currentBill['billNumber'] == data['bills'][i]['number']){
@@ -2603,7 +2607,7 @@ $.ajax({
                 "): " +
                 data["bills"][i]["latestAction"]["text"] +
                 '</small></div></div></div>\
-                  <p class="card-text mt-2">' +
+                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent">' +
                 billSummary +
                 '</p> \
                   <span class="badge rounded-pill text-bg-secondary">' +
