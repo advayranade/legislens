@@ -1,3 +1,9 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+let API_KEY = "AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg"
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 var billData;
 var bioguideIdByName = {
   "Greg Lopez": "L000604",
@@ -2533,15 +2539,6 @@ $.ajax({
         $.get(sponsorImgURL, (r) => {
           var sponsorImg = r["member"]["depiction"].imageUrl;
           $.get(billInfoURL, (resp) => {
-            if (resp["summaries"][0]) {
-              billSummary = resp["summaries"][0]["text"];
-            } else if (resp["summaries"]) {
-              billSummary = resp["summaries"]["text"];
-            }
-
-            if (billSummary === undefined) {
-              billSummary = "No summary available. ";
-            }
             if (data["bills"][i]["latestAction"]["actionDate"]) {
               var actionDate = data["bills"][i]["latestAction"]["actionDate"];
             }
@@ -2556,66 +2553,148 @@ $.ajax({
             let year =
               actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3];
             actionDate = month + "/" + day + "/" + year;
-            let cardHtml =
-              '<div class="card m-3" style="width: auto"> \
+            if (resp["summaries"][0]) {
+              billSummary = resp["summaries"][0]["text"];
+            } else if (resp["summaries"]) {
+              billSummary = resp["summaries"]["text"];
+            }
+
+            if (billSummary === undefined) {
+              billSummary = "No summary available. ";
+            }
+            if (billSummary == "No summary available. " && i == 0) {
+              const prompt = "\
+              Provide a detailed but short paragraph summary of the following congressional bill:\
+              Bill Name: " + data['bills'][i]['title'] + "\
+              Bill Number: " + data['bills'][i]['number'] + "\
+              Congress Session: " + data['bills'][i]['congress'] + "\
+              "
+              model.generateContent(prompt).then((result) => {
+                billSummary = result.response.text();
+                let cardHtml =
+                  '<div class="card m-3" style="width: auto"> \
               <div class="card-body"><div class=""><div class="d-flex align-items-center">\
                   <a href="/member-desc.html?id=' +
-              r["member"].bioguideId +
-              '"><img src="' +
-              sponsorImg +
-              '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
+                  r["member"].bioguideId +
+                  '"><img src="' +
+                  sponsorImg +
+                  '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
                   <div>' +
-              '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
-              data["bills"][i]["title"] +
-              '</h5>\
+                  '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
+                  data["bills"][i]["title"] +
+                  '</h5>\
                     </div>\
                           <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
-              actionDate +
-              "): " +
-              data["bills"][i]["latestAction"]["text"] +
-              '</small></div></div></div>\
+                  actionDate +
+                  "): " +
+                  data["bills"][i]["latestAction"]["text"] +
+                  '</small></div></div></div>\
                 <p class="card-text mt-2">' +
-              billSummary +
-              '</p> \
+                  billSummary +
+                  '</p> \
                 <span class="badge rounded-pill text-bg-secondary">' +
-              data["bills"][i]["originChamberCode"] +
-              data["bills"][i]["number"] +
-              '</span> \
+                  data["bills"][i]["originChamberCode"] +
+                  data["bills"][i]["number"] +
+                  '</span> \
                 <a id="' +
-              data["bills"][i]["congress"] +
-              "-" +
-              data["bills"][i]["type"].toLowerCase() +
-              "-" +
-              data["bills"][i]["number"] +
-              '" class="btn btn-primary btn-sm ms-3">More info</a>\
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"] +
+                  '" class="btn btn-primary btn-sm ms-3">More info</a>\
               </div> \
             </div>';
 
-            $("#column-1").append(cardHtml);
-            $(
-              "#" +
-                data["bills"][i]["congress"] +
-                "-" +
-                data["bills"][i]["type"].toLowerCase() +
-                "-" +
-                data["bills"][i]["number"]
-            ).on("click", function (e) {
-              let params = e.target.id.split("-");
-              let congressNum = params[0];
-              let billType = params[1];
-              let billNum = params[2];
-              let apiUrl =
-                "https://api.congress.gov/v3/bill/" +
-                congressNum +
-                "/" +
-                billType +
-                "/" +
-                billNum +
-                "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-              $.get(apiUrl, function (resp) {
-                openBillModal(resp);
-              });
-            });
+                $("#column-1").append(cardHtml);
+                $(
+                  "#" +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"]
+                ).on("click", function (e) {
+                  let params = e.target.id.split("-");
+                  let congressNum = params[0];
+                  let billType = params[1];
+                  let billNum = params[2];
+                  let apiUrl =
+                    "https://api.congress.gov/v3/bill/" +
+                    congressNum +
+                    "/" +
+                    billType +
+                    "/" +
+                    billNum +
+                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                  $.get(apiUrl, function (resp) {
+                    openBillModal(resp);
+                  });
+                });
+              })
+            } else {
+              let cardHtml =
+                  '<div class="card m-3" style="width: auto"> \
+              <div class="card-body"><div class=""><div class="d-flex align-items-center">\
+                  <a href="/member-desc.html?id=' +
+                  r["member"].bioguideId +
+                  '"><img src="' +
+                  sponsorImg +
+                  '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
+                  <div>' +
+                  '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
+                  data["bills"][i]["title"] +
+                  '</h5>\
+                    </div>\
+                          <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                  actionDate +
+                  "): " +
+                  data["bills"][i]["latestAction"]["text"] +
+                  '</small></div></div></div>\
+                <p class="card-text mt-2">' +
+                  billSummary +
+                  '</p> \
+                <span class="badge rounded-pill text-bg-secondary">' +
+                  data["bills"][i]["originChamberCode"] +
+                  data["bills"][i]["number"] +
+                  '</span> \
+                <a id="' +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"] +
+                  '" class="btn btn-primary btn-sm ms-3">More info</a>\
+              </div> \
+            </div>';
+
+                $("#column-1").append(cardHtml);
+                $(
+                  "#" +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"]
+                ).on("click", function (e) {
+                  let params = e.target.id.split("-");
+                  let congressNum = params[0];
+                  let billType = params[1];
+                  let billNum = params[2];
+                  let apiUrl =
+                    "https://api.congress.gov/v3/bill/" +
+                    congressNum +
+                    "/" +
+                    billType +
+                    "/" +
+                    billNum +
+                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                  $.get(apiUrl, function (resp) {
+                    openBillModal(resp);
+                  });
+                });
+            }
+
           });
         });
       });
@@ -2632,36 +2711,36 @@ function openBillModal(data) {
   var coSponsorHTML = "<ul>";
   var policyArea = "No Policy Area Found"
   if (data['bill'].hasOwnProperty("policyArea")) {
-    if (data['bill']['policyArea'].hasOwnProperty('name')){
+    if (data['bill']['policyArea'].hasOwnProperty('name')) {
       policyArea = data['bill']['policyArea']['name']
-      if (!policyArea){
+      if (!policyArea) {
         policyArea = "No Policy Area Found"
       }
     }
   }
   var introducedDate = "No Introduced Date Found";
-      if (data['bill'].hasOwnProperty('introducedDate')){
-        introducedDate = data["bill"]["introducedDate"];
-        if (!introducedDate){
-          introducedDate = "No Introduced Date Found";
-        } else {
-          let month = introducedDate[5] + introducedDate[6];
-          if (month[0] == 0) {
-            month = month[1];
-          }
-          let day = introducedDate[8] + introducedDate[9];
-          if (day[0] == 0) {
-            day = day[1];
-          }
-          let year =
-            introducedDate[0] +
-            introducedDate[1] +
-            introducedDate[2] +
-            introducedDate[3];
-          introducedDate = month + "/" + day + "/" + year;
-        }
-        
+  if (data['bill'].hasOwnProperty('introducedDate')) {
+    introducedDate = data["bill"]["introducedDate"];
+    if (!introducedDate) {
+      introducedDate = "No Introduced Date Found";
+    } else {
+      let month = introducedDate[5] + introducedDate[6];
+      if (month[0] == 0) {
+        month = month[1];
       }
+      let day = introducedDate[8] + introducedDate[9];
+      if (day[0] == 0) {
+        day = day[1];
+      }
+      let year =
+        introducedDate[0] +
+        introducedDate[1] +
+        introducedDate[2] +
+        introducedDate[3];
+      introducedDate = month + "/" + day + "/" + year;
+    }
+
+  }
   if (data["bill"]["cosponsors"]) {
     var coSponsorURL =
       data["bill"]["cosponsors"].url +
@@ -2672,8 +2751,8 @@ function openBillModal(data) {
         let createdHTML = "<li>" + coSponsorName + "</li>";
         coSponsorHTML = coSponsorHTML + createdHTML;
       }
-      
-      
+
+
       if (data["bill"]["policyArea"]) {
         modalTest =
           '<div class="modal" role="dialog" id="myModal">\
