@@ -228,11 +228,13 @@ const zipCodes = {
   "ocd-division/country:us/state:ak/cd:at-large": "99929",
 };
 
-$.get(
-  "https://api.congress.gov/v3/member/" +
+$.ajax({
+  type: "GET",
+  url:
+    "https://api.congress.gov/v3/member/" +
     memberID +
     "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
-  function (data) {
+  success: function (data) {
     try {
       var zipcode = data["member"]["state"];
       if (
@@ -248,7 +250,8 @@ $.get(
         } else {
           district = "at-large";
         }
-        let ocdID = "ocd-division/country:us/state:" + state + "/cd:" + district;
+        let ocdID =
+          "ocd-division/country:us/state:" + state + "/cd:" + district;
         zipcode = zipCodes[ocdID];
         if (!zipcode) {
           zipcode = "94087";
@@ -257,11 +260,12 @@ $.get(
     } catch (error) {
       zipcode = "94087";
     }
-    
-    $.get(
-      "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" +
+    $.ajax({
+      type: "GET",
+      url:
+        "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" +
         zipcode,
-      function (dataByLocation) {
+      success: function (dataByLocation) {
         let officials = dataByLocation.officials;
         var channelsHTML = "";
         var wikipedia = "";
@@ -311,13 +315,15 @@ $.get(
           if (data.member.hasOwnProperty("addressInformation")) {
             if (data.member.addressInformation.hasOwnProperty("phoneNumber")) {
               phoneNumber = data.member.addressInformation.phoneNumber;
-              if (!phoneNumber){
+              if (!phoneNumber) {
                 phoneNumber = "Not Found";
               }
             }
-            if (data.member.addressInformation.hasOwnProperty("officeAddress")){
+            if (
+              data.member.addressInformation.hasOwnProperty("officeAddress")
+            ) {
               officeAddress = data.member.addressInformation.officeAddress;
-              if (!officeAddress){
+              if (!officeAddress) {
                 officeAddress = "Not Found";
               }
             }
@@ -381,12 +387,13 @@ $.get(
           memberInfoHtml += termHTML;
         }
         memberInfoHtml += "</div>";
-
-        $.get(
-          "https://api.congress.gov/v3/member/" +
+        $.ajax({
+          type: "GET",
+          url:
+            "https://api.congress.gov/v3/member/" +
             memberID +
             "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
-          function (data) {
+          success: function (data) {
             let sponsoredLegislationHtml =
               "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
             for (legislation in data["sponsoredLegislation"]) {
@@ -484,13 +491,13 @@ $.get(
             }
             sponsoredLegislationHtml += "</div>";
             $("#sponsoredLegislationHtml").append(sponsoredLegislationHtml);
-          }
-        );
+          },
+        });
 
         $("#memberName").append(memberName);
         $("#memberInfoWrapper").append(memberInfoHtml);
         $("#memberImg").append(memberImgTag);
-      }
-    );
-  }
-);
+      },
+    });
+  },
+});
