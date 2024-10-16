@@ -2521,12 +2521,12 @@ $.ajax({
       currentDataset['summary'] = "<SUMMARIZE THIS BILL>"
       dataset.push(currentDataset);
     }
-    let dataset1 = dataset.slice(0, (dataset.length) / 4)
-    let dataset2 = dataset.slice((dataset.length) / 4, (dataset.length)/2)
-    let dataset3 = dataset.slice((dataset.length)/2, (dataset.length)/4*3);
-    let dataset4 = dataset.slice((dataset.length)/4*3, dataset.length);
+    let dataset1 = dataset.slice(0, Math.round((dataset.length) / 4))
+    let dataset2 = dataset.slice(Math.round((dataset.length) / 4), Math.round((dataset.length)/2))
+    let dataset3 = dataset.slice(Math.round((dataset.length)/2), Math.round((dataset.length)/4*3));
+    let dataset4 = dataset.slice(Math.round((dataset.length)/4*3), dataset.length);
     let prompt = "\
-    Provide a detailed but short paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
+    Provide a detailed paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
     Promise.all([
       model.generateContent(prompt + JSON.stringify(dataset1)),
       model.generateContent(prompt + JSON.stringify(dataset2)),
