@@ -2526,7 +2526,7 @@ $.ajax({
     let dataset3 = dataset.slice(Math.round((dataset.length)/2), Math.round((dataset.length)/4*3));
     let dataset4 = dataset.slice(Math.round((dataset.length)/4*3), dataset.length);
     let prompt = "\
-    Provide a detailed paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
+    Provide a detailed 5-8 sentence paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
     Promise.all([
       model.generateContent(prompt + JSON.stringify(dataset1)),
       model.generateContent(prompt + JSON.stringify(dataset2)),
