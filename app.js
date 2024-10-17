@@ -2550,6 +2550,7 @@ $.ajax({
           var billSummary;
           var color1 = '#000000'
           var color2 = '#000000'
+          var generatedWithAISign = "";
           let billInfoURL =
             "https://api.congress.gov/v3/bill/" +
             data["bills"][i]["congress"] +
@@ -2603,6 +2604,7 @@ $.ajax({
                     let currentBill = finalResponse[bill];
                     if (currentBill['billNumber'] == data['bills'][i]['number']) {
                       billSummary = currentBill['summary'];
+                      generatedWithAISign = '<span class="badge rounded-pill" style="background:linear-gradient(to right, ' + color1 + ', ' + color2 + ')"> Generated with AI</span>'
                       break;
                     }
                   }
@@ -2625,8 +2627,8 @@ $.ajax({
                   actionDate +
                   "): " +
                   data["bills"][i]["latestAction"]["text"] +
-                  '</small></div></div></div>\
-                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent">' +
+                  '</small></div></div></div>' + generatedWithAISign + '\
+                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-indent:1em">' +
                   billSummary +
                   '</p> \
                   <span class="badge rounded-pill text-bg-secondary">' +
