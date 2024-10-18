@@ -2522,9 +2522,9 @@ $.ajax({
       dataset.push(currentDataset);
     }
     let dataset1 = dataset.slice(0, Math.round((dataset.length) / 4))
-    let dataset2 = dataset.slice(Math.round((dataset.length) / 4), Math.round((dataset.length)/2))
-    let dataset3 = dataset.slice(Math.round((dataset.length)/2), Math.round((dataset.length)/4*3));
-    let dataset4 = dataset.slice(Math.round((dataset.length)/4*3), dataset.length);
+    let dataset2 = dataset.slice(Math.round((dataset.length) / 4), Math.round((dataset.length) / 2))
+    let dataset3 = dataset.slice(Math.round((dataset.length) / 2), Math.round((dataset.length) / 4 * 3));
+    let dataset4 = dataset.slice(Math.round((dataset.length) / 4 * 3), dataset.length);
     let prompt = "\
     Provide a detailed 5-8 sentence paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
     Promise.all([
@@ -2541,10 +2541,30 @@ $.ajax({
         let cleanedResponseString2 = stringResponse2.replace(/```json|```/g, '');
         let cleanedResponseString3 = stringResponse3.replace(/```json|```/g, '');
         let cleanedResponseString4 = stringResponse4.replace(/```json|```/g, '');
-        let response1 = JSON.parse(cleanedResponseString1);
-        let response2 = JSON.parse(cleanedResponseString2);
-        let response3 = JSON.parse(cleanedResponseString3);
-        let response4 = JSON.parse(cleanedResponseString4);
+        let response1;
+        let response2;
+        let response3;
+        let response4;
+        try {
+          response1 = JSON.parse(cleanedResponseString1);
+        } catch {
+          response1 = []
+        }
+        try {
+          response2 = JSON.parse(cleanedResponseString2);
+        } catch {
+          response2 = []
+        }
+        try {
+          response3 = JSON.parse(cleanedResponseString3);
+        } catch {
+          response3 = []
+        }
+        try {
+          response4 = JSON.parse(cleanedResponseString4);
+        } catch {
+          response4 = []
+        }
         let finalResponse = response1.concat(response2).concat(response3).concat(response4)
         for (let i = 0; i < data["bills"].length; i++) {
           var billSummary;
@@ -2604,9 +2624,16 @@ $.ajax({
                     let currentBill = finalResponse[bill];
                     if (currentBill['billNumber'] == data['bills'][i]['number']) {
                       billSummary = currentBill['summary'];
-                      generatedWithAISign = '<span class="badge rounded-pill" style="background:linear-gradient(to right, ' + color1 + ', ' + color2 + ')"> Generated with AI</span>'
                       break;
                     }
+                  }
+                  if (billSummary == undefined) {
+                    generatedWithAISign = ""
+                    billSummary = 'No Summary Found'
+                    color1 = '#000000'
+                    color2 = '#000000'
+                  } else {
+                    generatedWithAISign = '<span class="badge rounded-pill" style="background:linear-gradient(to right, ' + color1 + ', ' + color2 + ')"> Generated with AI</span>'
                   }
                 }
 
