@@ -2534,13 +2534,11 @@ $.ajax({
       model.generateContent(prompt + JSON.stringify(dataset4)),
     ])
       .then(([result1, result2, result3, result4]) => {
-        return Promise.all([result1.response.text(), result2.response.text(), result3.response.text(), result4.response.text()]); // Convert both responses to text
-      })
-      .then(([stringResponse1, stringResponse2, stringResponse3, stringResponse4]) => {
-        let cleanedResponseString1 = stringResponse1.replace(/```json|```/g, '');
-        let cleanedResponseString2 = stringResponse2.replace(/```json|```/g, '');
-        let cleanedResponseString3 = stringResponse3.replace(/```json|```/g, '');
-        let cleanedResponseString4 = stringResponse4.replace(/```json|```/g, '');
+        let stringedResponses = [result1.response.text(), result2.response.text(), result3.response.text(), result4.response.text()]; // Convert both responses to text
+        let cleanedResponseString1 = stringedResponses[0].replace(/```json|```/g, '');
+        let cleanedResponseString2 = stringedResponses[1].replace(/```json|```/g, '');
+        let cleanedResponseString3 = stringedResponses[2].replace(/```json|```/g, '');
+        let cleanedResponseString4 = stringedResponses[3].replace(/```json|```/g, '');
         let response1;
         let response2;
         let response3;
@@ -2703,7 +2701,124 @@ $.ajax({
             });
           });
         }
+      }).catch(error => {
+        for (let i = 0; i < data["bills"].length; i++) {
+          var billSummary;
+          let billInfoURL =
+            "https://api.congress.gov/v3/bill/" +
+            data["bills"][i]["congress"] +
+            "/" +
+            data["bills"][i]["type"].toLowerCase() +
+            "/" +
+            data["bills"][i]["number"] +
+            "/summaries?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+          let sponsorURL =
+            "https://api.congress.gov/v3/bill/" +
+            data["bills"][i]["congress"] +
+            "/" +
+            data["bills"][i]["type"].toLowerCase() +
+            "/" +
+            data["bills"][i]["number"] +
+            "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+          $.get(sponsorURL, (res) => {
+            billData = res;
+            let sponsorId = res["bill"]["sponsors"][0].bioguideId;
+            let sponsorImgURL =
+              "https://api.congress.gov/v3/member/" +
+              sponsorId +
+              "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            $.get(sponsorImgURL, (r) => {
+              var sponsorImg = r["member"]["depiction"].imageUrl;
+              $.get(billInfoURL, (resp) => {
+                if (resp["summaries"][0]) {
+                  billSummary = resp["summaries"][0]["text"];
+                } else if (resp["summaries"]) {
+                  billSummary = resp["summaries"]["text"];
+                }
+    
+                if (billSummary === undefined) {
+                  billSummary = "No summary available. ";
+                }
+                if (data["bills"][i]["latestAction"]["actionDate"]) {
+                  var actionDate = data["bills"][i]["latestAction"]["actionDate"];
+                }
+                let month = actionDate[5] + actionDate[6];
+                if (month[0] == 0) {
+                  month = month[1];
+                }
+                let day = actionDate[8] + actionDate[9];
+                if (day[0] == 0) {
+                  day = day[1];
+                }
+                let year =
+                  actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3];
+                actionDate = month + "/" + day + "/" + year;
+                let cardHtml =
+                  '<div class="card m-3" style="width: auto"> \
+                  <div class="card-body"><div class=""><div class="d-flex align-items-center">\
+                      <a href="/member-desc.html?id=' +
+                  r["member"].bioguideId +
+                  '"><img src="' +
+                  sponsorImg +
+                  '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
+                      <div>' +
+                  '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
+                  data["bills"][i]["title"] +
+                  '</h5>\
+                        </div>\
+                              <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                  actionDate +
+                  "): " +
+                  data["bills"][i]["latestAction"]["text"] +
+                  '</small></div></div></div>\
+                    <p class="card-text mt-2">' +
+                  billSummary +
+                  '</p> \
+                    <span class="badge rounded-pill text-bg-secondary">' +
+                  data["bills"][i]["originChamberCode"] +
+                  data["bills"][i]["number"] +
+                  '</span> \
+                    <a id="' +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"] +
+                  '" class="btn btn-primary btn-sm ms-3">More info</a>\
+                  </div> \
+                </div>';
+    
+                $("#column-1").append(cardHtml);
+                $(
+                  "#" +
+                    data["bills"][i]["congress"] +
+                    "-" +
+                    data["bills"][i]["type"].toLowerCase() +
+                    "-" +
+                    data["bills"][i]["number"]
+                ).on("click", function (e) {
+                  let params = e.target.id.split("-");
+                  let congressNum = params[0];
+                  let billType = params[1];
+                  let billNum = params[2];
+                  let apiUrl =
+                    "https://api.congress.gov/v3/bill/" +
+                    congressNum +
+                    "/" +
+                    billType +
+                    "/" +
+                    billNum +
+                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                  $.get(apiUrl, function (resp) {
+                    openBillModal(resp);
+                  });
+                });
+              });
+            });
+          });
+        }
       })
+        
   },
   error: function (err) {
     console.error("ERROR: Please try again later. ", err.statusCode());
