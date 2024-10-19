@@ -1,3 +1,9 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+let API_KEY = "AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg"
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 var billData;
 var bioguideIdByName = {
   "Greg Lopez": "L000604",
@@ -2505,141 +2511,314 @@ $.ajax({
   type: "GET",
   url: "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   success: function (data) {
-    for (let i = 0; i < data["bills"].length; i++) {
-      var billSummary;
-      let billInfoURL =
-        "https://api.congress.gov/v3/bill/" +
-        data["bills"][i]["congress"] +
-        "/" +
-        data["bills"][i]["type"].toLowerCase() +
-        "/" +
-        data["bills"][i]["number"] +
-        "/summaries?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-      let sponsorURL =
-        "https://api.congress.gov/v3/bill/" +
-        data["bills"][i]["congress"] +
-        "/" +
-        data["bills"][i]["type"].toLowerCase() +
-        "/" +
-        data["bills"][i]["number"] +
-        "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-      $.ajax({
-        type: "GET",
-        url: sponsorURL,
-        success: function (res) {
-          billData = res;
-          let sponsorId = res["bill"]["sponsors"][0].bioguideId;
-          let sponsorImgURL =
-            "https://api.congress.gov/v3/member/" +
-            sponsorId +
+    let dataset = []
+    for (let i = 0; i < data['bills'].length; i++) {
+      let currentBill = data['bills'][i];
+      let currentDataset = {}
+      currentDataset["billName"] = currentBill["title"];
+      currentDataset["billNumber"] = currentBill["number"];
+      currentDataset["congressSession"] = currentBill["congress"];
+      currentDataset['summary'] = "<SUMMARIZE THIS BILL>"
+      dataset.push(currentDataset);
+    }
+    let dataset1 = dataset.slice(0, Math.round((dataset.length) / 4))
+    let dataset2 = dataset.slice(Math.round((dataset.length) / 4), Math.round((dataset.length) / 2))
+    let dataset3 = dataset.slice(Math.round((dataset.length) / 2), Math.round((dataset.length) / 4 * 3));
+    let dataset4 = dataset.slice(Math.round((dataset.length) / 4 * 3), dataset.length);
+    let prompt = "\
+    Provide a detailed 5-8 sentence paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
+    Promise.all([
+      model.generateContent(prompt + JSON.stringify(dataset1)),
+      model.generateContent(prompt + JSON.stringify(dataset2)),
+      model.generateContent(prompt + JSON.stringify(dataset3)),
+      model.generateContent(prompt + JSON.stringify(dataset4)),
+    ])
+      .then(([result1, result2, result3, result4]) => {
+        let stringedResponses = [result1.response.text(), result2.response.text(), result3.response.text(), result4.response.text()]; // Convert both responses to text
+        let cleanedResponseString1 = stringedResponses[0].replace(/```json|```/g, '');
+        let cleanedResponseString2 = stringedResponses[1].replace(/```json|```/g, '');
+        let cleanedResponseString3 = stringedResponses[2].replace(/```json|```/g, '');
+        let cleanedResponseString4 = stringedResponses[3].replace(/```json|```/g, '');
+        let response1;
+        let response2;
+        let response3;
+        let response4;
+        try {
+          response1 = JSON.parse(cleanedResponseString1);
+        } catch {
+          response1 = []
+        }
+        try {
+          response2 = JSON.parse(cleanedResponseString2);
+        } catch {
+          response2 = []
+        }
+        try {
+          response3 = JSON.parse(cleanedResponseString3);
+        } catch {
+          response3 = []
+        }
+        try {
+          response4 = JSON.parse(cleanedResponseString4);
+        } catch {
+          response4 = []
+        }
+        let finalResponse = response1.concat(response2).concat(response3).concat(response4)
+        for (let i = 0; i < data["bills"].length; i++) {
+          var billSummary;
+          var color1 = '#000000'
+          var color2 = '#000000'
+          var generatedWithAISign = "";
+          let billInfoURL =
+            "https://api.congress.gov/v3/bill/" +
+            data["bills"][i]["congress"] +
+            "/" +
+            data["bills"][i]["type"].toLowerCase() +
+            "/" +
+            data["bills"][i]["number"] +
+            "/summaries?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+          let sponsorURL =
+            "https://api.congress.gov/v3/bill/" +
+            data["bills"][i]["congress"] +
+            "/" +
+            data["bills"][i]["type"].toLowerCase() +
+            "/" +
+            data["bills"][i]["number"] +
             "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-          $.ajax({
-            type: "GET",
-            url: sponsorImgURL,
-            success: function (r) {
+          $.get(sponsorURL, (res) => {
+            billData = res;
+            let sponsorId = res["bill"]["sponsors"][0].bioguideId;
+            let sponsorImgURL =
+              "https://api.congress.gov/v3/member/" +
+              sponsorId +
+              "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            $.get(sponsorImgURL, (r) => {
               var sponsorImg = r["member"]["depiction"].imageUrl;
-              $.ajax({
-                type: "GET",
-                url: billInfoURL,
-                success: function (resp) {
-                  if (resp["summaries"][0]) {
-                    billSummary = resp["summaries"][0]["text"];
-                  } else if (resp["summaries"]) {
-                    billSummary = resp["summaries"]["text"];
-                  }
+              $.get(billInfoURL, (resp) => {
+                if (data["bills"][i]["latestAction"]["actionDate"]) {
+                  var actionDate = data["bills"][i]["latestAction"]["actionDate"];
+                }
+                let month = actionDate[5] + actionDate[6];
+                if (month[0] == 0) {
+                  month = month[1];
+                }
+                let day = actionDate[8] + actionDate[9];
+                if (day[0] == 0) {
+                  day = day[1];
+                }
+                let year =
+                  actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3];
+                actionDate = month + "/" + day + "/" + year;
+                if (resp["summaries"][0]) {
+                  billSummary = resp["summaries"][0]["text"];
+                } else if (resp["summaries"]) {
+                  billSummary = resp["summaries"]["text"];
+                }
 
-                  if (billSummary === undefined) {
-                    billSummary = "No summary available. ";
+                if (billSummary === undefined) {
+                  color1 = '#6090FF'
+                  color2 = '#FF76A1'
+                  for (let bill in finalResponse) {
+                    let currentBill = finalResponse[bill];
+                    if (currentBill['billNumber'] == data['bills'][i]['number']) {
+                      billSummary = currentBill['summary'];
+                      break;
+                    }
                   }
-                  if (data["bills"][i]["latestAction"]["actionDate"]) {
-                    var actionDate =
-                      data["bills"][i]["latestAction"]["actionDate"];
+                  if (billSummary == undefined) {
+                    generatedWithAISign = ""
+                    billSummary = 'No Summary Found'
+                    color1 = '#000000'
+                    color2 = '#000000'
+                  } else {
+                    generatedWithAISign = '<span class="badge rounded-pill" style="background:linear-gradient(to right, ' + color1 + ', ' + color2 + ')"> Generated with AI</span>'
                   }
-                  let month = actionDate[5] + actionDate[6];
-                  if (month[0] == 0) {
-                    month = month[1];
-                  }
-                  let day = actionDate[8] + actionDate[9];
-                  if (day[0] == 0) {
-                    day = day[1];
-                  }
-                  let year =
-                    actionDate[0] +
-                    actionDate[1] +
-                    actionDate[2] +
-                    actionDate[3];
-                  actionDate = month + "/" + day + "/" + year;
-                  let cardHtml =
-                    '<div class="card m-3" style="width: auto"> \
-                          <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                              <a href="/member-desc.html?id=' +
-                    r["member"].bioguideId +
-                    '"><img src="' +
-                    sponsorImg +
-                    '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
-                              <div>' +
-                    '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
-                    data["bills"][i]["title"] +
-                    '</h5>\
-                                </div>\
-                                      <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
-                    actionDate +
-                    "): " +
-                    data["bills"][i]["latestAction"]["text"] +
-                    '</small></div></div></div>\
-                            <p class="card-text mt-2">' +
-                    billSummary +
-                    '</p> \
-                            <span class="badge rounded-pill text-bg-secondary">' +
-                    data["bills"][i]["originChamberCode"] +
-                    data["bills"][i]["number"] +
-                    '</span> \
-                            <a id="' +
+                }
+
+                let cardHtml =
+                  '<div class="card m-3" style="width: auto"> \
+                <div class="card-body"><div class=""><div class="d-flex align-items-center">\
+                    <a href="/member-desc.html?id=' +
+                  r["member"].bioguideId +
+                  '"><img src="' +
+                  sponsorImg +
+                  '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
+                    <div>' +
+                  '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
+                  data["bills"][i]["title"] +
+                  '</h5>\
+                      </div>\
+                            <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                  actionDate +
+                  "): " +
+                  data["bills"][i]["latestAction"]["text"] +
+                  '</small></div></div></div>' + generatedWithAISign + '\
+                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent">' +
+                  billSummary +
+                  '</p> \
+                  <span class="badge rounded-pill text-bg-secondary">' +
+                  data["bills"][i]["originChamberCode"] +
+                  data["bills"][i]["number"] +
+                  '</span> \
+                  <a id="' +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"] +
+                  '" class="btn btn-primary btn-sm ms-3">More info</a>\
+                </div> \
+              </div>';
+
+                $("#column-1").append(cardHtml);
+                $(
+                  "#" +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"]
+                ).on("click", function (e) {
+                  let params = e.target.id.split("-");
+                  let congressNum = params[0];
+                  let billType = params[1];
+                  let billNum = params[2];
+                  let apiUrl =
+                    "https://api.congress.gov/v3/bill/" +
+                    congressNum +
+                    "/" +
+                    billType +
+                    "/" +
+                    billNum +
+                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                  $.get(apiUrl, function (resp) {
+                    openBillModal(resp);
+                  });
+                });
+              }
+
+              );
+            });
+          });
+        }
+      }).catch(error => {
+        for (let i = 0; i < data["bills"].length; i++) {
+          var billSummary;
+          let billInfoURL =
+            "https://api.congress.gov/v3/bill/" +
+            data["bills"][i]["congress"] +
+            "/" +
+            data["bills"][i]["type"].toLowerCase() +
+            "/" +
+            data["bills"][i]["number"] +
+            "/summaries?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+          let sponsorURL =
+            "https://api.congress.gov/v3/bill/" +
+            data["bills"][i]["congress"] +
+            "/" +
+            data["bills"][i]["type"].toLowerCase() +
+            "/" +
+            data["bills"][i]["number"] +
+            "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+          $.get(sponsorURL, (res) => {
+            billData = res;
+            let sponsorId = res["bill"]["sponsors"][0].bioguideId;
+            let sponsorImgURL =
+              "https://api.congress.gov/v3/member/" +
+              sponsorId +
+              "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            $.get(sponsorImgURL, (r) => {
+              var sponsorImg = r["member"]["depiction"].imageUrl;
+              $.get(billInfoURL, (resp) => {
+                if (resp["summaries"][0]) {
+                  billSummary = resp["summaries"][0]["text"];
+                } else if (resp["summaries"]) {
+                  billSummary = resp["summaries"]["text"];
+                }
+    
+                if (billSummary === undefined) {
+                  billSummary = "No summary available. ";
+                }
+                if (data["bills"][i]["latestAction"]["actionDate"]) {
+                  var actionDate = data["bills"][i]["latestAction"]["actionDate"];
+                }
+                let month = actionDate[5] + actionDate[6];
+                if (month[0] == 0) {
+                  month = month[1];
+                }
+                let day = actionDate[8] + actionDate[9];
+                if (day[0] == 0) {
+                  day = day[1];
+                }
+                let year =
+                  actionDate[0] + actionDate[1] + actionDate[2] + actionDate[3];
+                actionDate = month + "/" + day + "/" + year;
+                let cardHtml =
+                  '<div class="card m-3" style="width: auto"> \
+                  <div class="card-body"><div class=""><div class="d-flex align-items-center">\
+                      <a href="/member-desc.html?id=' +
+                  r["member"].bioguideId +
+                  '"><img src="' +
+                  sponsorImg +
+                  '" class="sponsor-img" style="object-fit:cover;width: 50px;height: 50px;border-radius: 50%; margin-right: 10px;"></a>\
+                      <div>' +
+                  '<div class="bill-title" style="font-weight: bold;"><h5 class="card-title" style="display:inline;">' +
+                  data["bills"][i]["title"] +
+                  '</h5>\
+                        </div>\
+                              <div class="latest-action"><small class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">LATEST ACTION (' +
+                  actionDate +
+                  "): " +
+                  data["bills"][i]["latestAction"]["text"] +
+                  '</small></div></div></div>\
+                    <p class="card-text mt-2">' +
+                  billSummary +
+                  '</p> \
+                    <span class="badge rounded-pill text-bg-secondary">' +
+                  data["bills"][i]["originChamberCode"] +
+                  data["bills"][i]["number"] +
+                  '</span> \
+                    <a id="' +
+                  data["bills"][i]["congress"] +
+                  "-" +
+                  data["bills"][i]["type"].toLowerCase() +
+                  "-" +
+                  data["bills"][i]["number"] +
+                  '" class="btn btn-primary btn-sm ms-3">More info</a>\
+                  </div> \
+                </div>';
+    
+                $("#column-1").append(cardHtml);
+                $(
+                  "#" +
                     data["bills"][i]["congress"] +
                     "-" +
                     data["bills"][i]["type"].toLowerCase() +
                     "-" +
-                    data["bills"][i]["number"] +
-                    '" class="btn btn-primary btn-sm ms-3">More info</a>\
-                          </div> \
-                        </div>';
-
-                  $("#column-1").append(cardHtml);
-                  $(
-                    "#" +
-                      data["bills"][i]["congress"] +
-                      "-" +
-                      data["bills"][i]["type"].toLowerCase() +
-                      "-" +
-                      data["bills"][i]["number"]
-                  ).on("click", function (e) {
-                    let params = e.target.id.split("-");
-                    let congressNum = params[0];
-                    let billType = params[1];
-                    let billNum = params[2];
-                    let apiUrl =
-                      "https://api.congress.gov/v3/bill/" +
-                      congressNum +
-                      "/" +
-                      billType +
-                      "/" +
-                      billNum +
-                      "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-                    $.ajax({
-                      type: "GET",
-                      url: apiUrl,
-                      success: function (resp) {
-                        openBillModal(resp);
-                      },
-                    });
+                    data["bills"][i]["number"]
+                ).on("click", function (e) {
+                  let params = e.target.id.split("-");
+                  let congressNum = params[0];
+                  let billType = params[1];
+                  let billNum = params[2];
+                  let apiUrl =
+                    "https://api.congress.gov/v3/bill/" +
+                    congressNum +
+                    "/" +
+                    billType +
+                    "/" +
+                    billNum +
+                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                  $.get(apiUrl, function (resp) {
+                    openBillModal(resp);
                   });
-                },
+                });
               });
-            },
+            });
           });
-        },
-      });
-    }
+        }
+      })
+        
   },
   error: function (err) {
     console.error("ERROR: Please try again later. ", err.statusCode());
@@ -2650,135 +2829,151 @@ function openBillModal(data) {
   var coSponsorData;
   var modalTest = "";
   var coSponsorHTML = "<ul>";
+  var policyArea = "No Policy Area Found"
+  if (data['bill'].hasOwnProperty("policyArea")) {
+    if (data['bill']['policyArea'].hasOwnProperty('name')) {
+      policyArea = data['bill']['policyArea']['name']
+      if (!policyArea) {
+        policyArea = "No Policy Area Found"
+      }
+    }
+  }
+  var introducedDate = "No Introduced Date Found";
+  if (data['bill'].hasOwnProperty('introducedDate')) {
+    introducedDate = data["bill"]["introducedDate"];
+    if (!introducedDate) {
+      introducedDate = "No Introduced Date Found";
+    } else {
+      let month = introducedDate[5] + introducedDate[6];
+      if (month[0] == 0) {
+        month = month[1];
+      }
+      let day = introducedDate[8] + introducedDate[9];
+      if (day[0] == 0) {
+        day = day[1];
+      }
+      let year =
+        introducedDate[0] +
+        introducedDate[1] +
+        introducedDate[2] +
+        introducedDate[3];
+      introducedDate = month + "/" + day + "/" + year;
+    }
+
+  }
   if (data["bill"]["cosponsors"]) {
     var coSponsorURL =
       data["bill"]["cosponsors"].url +
       "&api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
-    $.ajax({
-      type: "GET",
-      url: coSponsorURL,
-      success: function (response) {
-        for (let index = 0; index < response["cosponsors"].length; index++) {
-          let coSponsorName = response["cosponsors"][index].fullName;
-          let createdHTML = "<li>" + coSponsorName + "</li>";
-          coSponsorHTML = coSponsorHTML + createdHTML;
-        }
-        let introducedDate = data["bill"]["introducedDate"];
-        let month = introducedDate[5] + introducedDate[6];
-        if (month[0] == 0) {
-          month = month[1];
-        }
-        let day = introducedDate[8] + introducedDate[9];
-        if (day[0] == 0) {
-          day = day[1];
-        }
-        let year =
-          introducedDate[0] +
-          introducedDate[1] +
-          introducedDate[2] +
-          introducedDate[3];
-        introducedDate = month + "/" + day + "/" + year;
-        if (data["bill"]["policyArea"]) {
-          modalTest =
-            '<div class="modal" role="dialog" id="myModal">\
-          <div class="modal-dialog" role="document">\
-            <div class="modal-content">\
-              <div class="modal-header">\
-                <h5 class="modal-title">' +
-            data["bill"].title +
-            '</h5>\
-              </div>\
-              <div class="modal-body">\
-                <dl class="row">\
-          <dt class="col-sm-4">Sponsor</dt>\
-          <dd class="col-sm-7">' +
-            data["bill"]["sponsors"][0].fullName +
-            '</dd>\
-          <dt class="col-sm-4">Bill #</dt>\
-          <dd class="col-sm-7">\
-              ' +
-            data["bill"].number +
-            '\
-          </dd>\
-          <dt class="col-sm-4">Introduced</dt>\
-          <dd class="col-sm-7">' +
-            introducedDate +
-            '</dd>\
-          <dt class="col-sm-4">Policy Area</dt>\
-          <dd class="col-sm-7">' +
-            data["bill"]["policyArea"].name +
-            '</dd>\
-              <dt class="col-sm-4">More Info</dt>\
-          <dd class="col-sm-7">\
-          <a href="https://congress.gov/bill/' +
-            data["bill"].congress +
-            "/" +
-            data["bill"].type.toLowerCase() +
-            "/" +
-            data["bill"].number +
-            ' " target="_blank">View</a>\
-          </dd>\
-          <dt class="col-sm-4">Co-Sponsors</dt>\
-          <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
-        </dl>\
-        <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
-            coSponsorHTML +
-            '</ul></div></div></div>\
-              <div class="modal-footer">\
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
-              </div>\
-            </div>\
+    $.get(coSponsorURL, (response) => {
+      for (let index = 0; index < response["cosponsors"].length; index++) {
+        let coSponsorName = response["cosponsors"][index].fullName;
+        let createdHTML = "<li>" + coSponsorName + "</li>";
+        coSponsorHTML = coSponsorHTML + createdHTML;
+      }
+
+
+      if (data["bill"]["policyArea"]) {
+        modalTest =
+          '<div class="modal" role="dialog" id="myModal">\
+      <div class="modal-dialog" role="document">\
+        <div class="modal-content">\
+          <div class="modal-header">\
+            <h5 class="modal-title">' +
+          data["bill"].title +
+          '</h5>\
           </div>\
-        </div>';
-        } else {
-          modalTest =
-            '<div class="modal" role="dialog" id="myModal">\
-          <div class="modal-dialog" role="document">\
-            <div class="modal-content">\
-              <div class="modal-header">\
-                <h5 class="modal-title">' +
-            data["bill"].title +
-            '</h5>\
-              </div>\
-              <div class="modal-body">\
-                <dl class="row">\
-          <dt class="col-sm-4">Sponsor</dt>\
-          <dd class="col-sm-7">' +
-            data["bill"]["sponsors"][0].fullName +
-            '</dd>\
-          <dt class="col-sm-4">Bill #</dt>\
-          <dd class="col-sm-7">\
-              ' +
-            data["bill"].number +
-            '\
-          </dd>\
-          <dt class="col-sm-4">Introduced</dt>\
-          <dd class="col-sm-7">' +
-            introducedDate +
-            '</dd>\
-              <dt class="col-sm-4">More Info</dt>\
-          <dd class="col-sm-7">\
-          <a href="https://congress.gov/bill/' +
-            data["bill"].congress +
-            "/" +
-            data["bill"].type.toLowerCase() +
-            "/" +
-            data["bill"].number +
-            ' " target="_blank">View</a>\
-          </dd>\
-          <dt class="col-sm-4">Co-Sponsors</dt>\
-          <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
-        </dl>\
-        <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
-            coSponsorHTML +
-            '</ul></div></div></div>\
-              <div class="modal-footer">\
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
-              </div>\
-            </div>\
+          <div class="modal-body">\
+            <dl class="row">\
+      <dt class="col-sm-4">Sponsor</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"]["sponsors"][0].fullName +
+          '</dd>\
+      <dt class="col-sm-4">Bill #</dt>\
+      <dd class="col-sm-7">\
+          ' +
+          data["bill"].number +
+          '\
+      </dd>\
+      <dt class="col-sm-4">Introduced</dt>\
+      <dd class="col-sm-7">' +
+          introducedDate +
+          '</dd>\
+      <dt class="col-sm-4">Policy Area</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"]["policyArea"].name +
+          '</dd>\
+          <dt class="col-sm-4">More Info</dt>\
+      <dd class="col-sm-7">\
+      <a href="https://congress.gov/bill/' +
+          data["bill"].congress +
+          "/" +
+          data["bill"].type.toLowerCase() +
+          "/" +
+          data["bill"].number +
+          ' " target="_blank">View</a>\
+      </dd>\
+      <dt class="col-sm-4">Co-Sponsors</dt>\
+      <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
+    </dl>\
+    <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
+          coSponsorHTML +
+          '</ul></div></div></div>\
+          <div class="modal-footer">\
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
           </div>\
-        </div>';
-        }
+        </div>\
+      </div>\
+    </div>';
+      } else {
+        modalTest =
+          '<div class="modal" role="dialog" id="myModal">\
+      <div class="modal-dialog" role="document">\
+        <div class="modal-content">\
+          <div class="modal-header">\
+            <h5 class="modal-title">' +
+          data["bill"].title +
+          '</h5>\
+          </div>\
+          <div class="modal-body">\
+            <dl class="row">\
+      <dt class="col-sm-4">Sponsor</dt>\
+      <dd class="col-sm-7">' +
+          data["bill"]["sponsors"][0].fullName +
+          '</dd>\
+      <dt class="col-sm-4">Bill #</dt>\
+      <dd class="col-sm-7">\
+          ' +
+          data["bill"].number +
+          '\
+      </dd>\
+      <dt class="col-sm-4">Introduced</dt>\
+      <dd class="col-sm-7">' +
+          introducedDate +
+          '</dd>\
+          <dt class="col-sm-4">More Info</dt>\
+      <dd class="col-sm-7">\
+      <a href="https://congress.gov/bill/' +
+          data["bill"].congress +
+          "/" +
+          data["bill"].type.toLowerCase() +
+          "/" +
+          data["bill"].number +
+          ' " target="_blank">View</a>\
+      </dd>\
+      <dt class="col-sm-4">Co-Sponsors</dt>\
+      <dd class="col-sm-7"><a data-bs-toggle="collapse" href="#coSponsorsList" role="button" aria-expanded="false" aria-controls="coSponsorsList">View</a></dd>\
+    </dl>\
+    <div class="collapse" id="coSponsorsList"><div class="card card-body">' +
+          coSponsorHTML +
+          '</ul></div></div></div>\
+          <div class="modal-footer">\
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close">Close</button>\
+          </div>\
+        </div>\
+      </div>\
+    </div>';
+      }
 
         $("#modal-wrapper").text("");
         $("#modal-wrapper").append(modalTest);
@@ -2788,7 +2983,7 @@ function openBillModal(data) {
         $("#myModal").show();
         $("#myModal").focus();
       },
-    });
+    );
   } else {
     modalTest =
       '<div class="modal" role="dialog" id="myModal">\
@@ -2817,7 +3012,7 @@ function openBillModal(data) {
       '</dd>\
       <dt class="col-sm-4">Policy Area</dt>\
       <dd class="col-sm-7">' +
-      data["bill"]["policyArea"].name +
+      policyArea +
       '</dd>\
       <dt class="col-sm-4">More Info</dt>\
       <dd class="col-sm-7">\
@@ -2830,7 +3025,7 @@ function openBillModal(data) {
       ' " target="_blank">View</a>\
       </dd>\
       <dt class="col-sm-4">Co-Sponsors</dt>\
-      <dd class="col-sm-7">NO COSPONSORS</dd>\
+      <dd class="col-sm-7">No Cosponsors Found</dd>\
     </dl>\
     <div class="collapse" id="coSponsorsList"><div class="card card-body" style="text-decoration:underline;">NO COSPONSORS' +
       '</ul></div></div></div>\
@@ -2881,9 +3076,7 @@ $("#member-submit").on("click", function (e) {
           civicAPIMemberNameArray[0] +
           " " +
           civicAPIMemberNameArray[civicAPIMemberNameArray.length - 1];
-        console.log(civicAPIMemberName);
         let bioguideID = bioguideIdByName[civicAPIMemberName];
-        console.log(bioguideIdByName[civicAPIMemberName]);
         memberCardHTML = "";
         if (0 == 0) {
           let districtIdSplit = data["offices"][1]
