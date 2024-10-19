@@ -24,6 +24,6 @@ LegisLens allows users to look up key congressional data inluding respective sen
 
 **Aarush Joglekar**
 - Freshman at Homestead High School
-- Enjoys ______________
-- Likes to _________________
+- Enjoys mobile development
+- Likes to play piano and saxophone, and watch TV in his free time
 - _Contact_: <mark>aarush.joglekar (at) gmail (dot) com</mark>
