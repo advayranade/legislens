@@ -2653,7 +2653,7 @@ $.ajax({
                   "): " +
                   data["bills"][i]["latestAction"]["text"] +
                   '</small></div></div></div>' + generatedWithAISign + '\
-                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-indent:1em">' +
+                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent">' +
                   billSummary +
                   '</p> \
                   <span class="badge rounded-pill text-bg-secondary">' +
