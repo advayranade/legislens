@@ -5,6 +5,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 var billData;
+// BioGuideIDs for all members of congress
 var bioguideIdByName = {
   "Greg Lopez": "L000604",
   "Kevin Mullin": "M001225",
@@ -2507,6 +2508,7 @@ var bioguideIdByName = {
   "John Flynt": "F000229",
 };
 
+// Latest bills call and attachement of event listeners
 $.ajax({
   type: "GET",
   url: "https://api.congress.gov/v3/bill?api_key=" + apiKeys.congress,
@@ -2887,6 +2889,7 @@ $.ajax({
   },
 });
 
+// Open modal on click of more info button
 function openBillModal(data) {
   var coSponsorData;
   var modalTest = "";
@@ -3104,6 +3107,8 @@ function openBillModal(data) {
   }
 }
 
+
+// Find your member functionality
 $("#member-submit").on("click", function (e) {
   e.preventDefault();
   $("#memberWrapper").text("");
@@ -3217,6 +3222,7 @@ $("#member-submit").on("click", function (e) {
   });
 });
 
+// NewsAPI call
 $.ajax({
   type: "GET",
   url: "https://newsapi.org/v2/everything?q=congress&apiKey=" + apiKeys.newsApi,
@@ -3274,4 +3280,5 @@ $.ajax({
     }
   },
 });
+
 $(".carousel").dataInterval = 2000;

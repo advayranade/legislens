@@ -236,6 +236,7 @@ $.ajax({
     "?api_key=" +
     apiKeys.congress,
   success: function (data) {
+    // Check for zipcode
     try {
       var zipcode = data["member"]["state"];
       if (
@@ -498,6 +499,7 @@ $.ajax({
           },
         });
 
+        // Add all information to DOM
         $("#memberName").append(memberName);
         $("#memberInfoWrapper").append(memberInfoHtml);
         $("#memberImg").append(memberImgTag);
