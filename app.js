@@ -2938,7 +2938,7 @@ function openBillModal(data) {
 
       if (data["bill"]["policyArea"]) {
         modalTest =
-          '<div class="modal" role="dialog" id="myModal">\
+          '<div class="modal" role="dialog" id="billModal">\
       <div class="modal-dialog" role="document">\
         <div class="modal-content">\
           <div class="modal-header">\
