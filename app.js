@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-let API_KEY = "AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg"
+let API_KEY = apiKeys.google;
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -2509,24 +2509,41 @@ var bioguideIdByName = {
 
 $.ajax({
   type: "GET",
-  url: "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+  url: "https://api.congress.gov/v3/bill?api_key=" + apiKeys.congress,
+  beforeSend: function () {
+    $("#column-1").html(
+      "<div class='spinner-border m-3' id='bills-spinner' role='status'>\
+  <span class='visually-hidden'>Loading...</span>\
+</div>"
+    );
+  },
   success: function (data) {
-    let dataset = []
-    for (let i = 0; i < data['bills'].length; i++) {
-      let currentBill = data['bills'][i];
-      let currentDataset = {}
+    let dataset = [];
+    for (let i = 0; i < data["bills"].length; i++) {
+      let currentBill = data["bills"][i];
+      let currentDataset = {};
       currentDataset["billName"] = currentBill["title"];
       currentDataset["billNumber"] = currentBill["number"];
       currentDataset["congressSession"] = currentBill["congress"];
-      currentDataset['summary'] = "<SUMMARIZE THIS BILL>"
+      currentDataset["summary"] = "<SUMMARIZE THIS BILL>";
       dataset.push(currentDataset);
     }
-    let dataset1 = dataset.slice(0, Math.round((dataset.length) / 4))
-    let dataset2 = dataset.slice(Math.round((dataset.length) / 4), Math.round((dataset.length) / 2))
-    let dataset3 = dataset.slice(Math.round((dataset.length) / 2), Math.round((dataset.length) / 4 * 3));
-    let dataset4 = dataset.slice(Math.round((dataset.length) / 4 * 3), dataset.length);
-    let prompt = "\
-    Provide a detailed 5-8 sentence paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n"
+    let dataset1 = dataset.slice(0, Math.round(dataset.length / 4));
+    let dataset2 = dataset.slice(
+      Math.round(dataset.length / 4),
+      Math.round(dataset.length / 2)
+    );
+    let dataset3 = dataset.slice(
+      Math.round(dataset.length / 2),
+      Math.round((dataset.length / 4) * 3)
+    );
+    let dataset4 = dataset.slice(
+      Math.round((dataset.length / 4) * 3),
+      dataset.length
+    );
+    let prompt =
+      "\
+    Provide a detailed 5-8 sentence paragraph summary for each of the following congressional bills. Return the summaries in a json array\n\n";
     Promise.all([
       model.generateContent(prompt + JSON.stringify(dataset1)),
       model.generateContent(prompt + JSON.stringify(dataset2)),
@@ -2534,11 +2551,28 @@ $.ajax({
       model.generateContent(prompt + JSON.stringify(dataset4)),
     ])
       .then(([result1, result2, result3, result4]) => {
-        let stringedResponses = [result1.response.text(), result2.response.text(), result3.response.text(), result4.response.text()]; // Convert both responses to text
-        let cleanedResponseString1 = stringedResponses[0].replace(/```json|```/g, '');
-        let cleanedResponseString2 = stringedResponses[1].replace(/```json|```/g, '');
-        let cleanedResponseString3 = stringedResponses[2].replace(/```json|```/g, '');
-        let cleanedResponseString4 = stringedResponses[3].replace(/```json|```/g, '');
+        let stringedResponses = [
+          result1.response.text(),
+          result2.response.text(),
+          result3.response.text(),
+          result4.response.text(),
+        ]; // Convert both responses to text
+        let cleanedResponseString1 = stringedResponses[0].replace(
+          /```json|```/g,
+          ""
+        );
+        let cleanedResponseString2 = stringedResponses[1].replace(
+          /```json|```/g,
+          ""
+        );
+        let cleanedResponseString3 = stringedResponses[2].replace(
+          /```json|```/g,
+          ""
+        );
+        let cleanedResponseString4 = stringedResponses[3].replace(
+          /```json|```/g,
+          ""
+        );
         let response1;
         let response2;
         let response3;
@@ -2546,28 +2580,31 @@ $.ajax({
         try {
           response1 = JSON.parse(cleanedResponseString1);
         } catch {
-          response1 = []
+          response1 = [];
         }
         try {
           response2 = JSON.parse(cleanedResponseString2);
         } catch {
-          response2 = []
+          response2 = [];
         }
         try {
           response3 = JSON.parse(cleanedResponseString3);
         } catch {
-          response3 = []
+          response3 = [];
         }
         try {
           response4 = JSON.parse(cleanedResponseString4);
         } catch {
-          response4 = []
+          response4 = [];
         }
-        let finalResponse = response1.concat(response2).concat(response3).concat(response4)
+        let finalResponse = response1
+          .concat(response2)
+          .concat(response3)
+          .concat(response4);
         for (let i = 0; i < data["bills"].length; i++) {
           var billSummary;
-          var color1 = '#000000'
-          var color2 = '#000000'
+          var color1 = "#000000";
+          var color2 = "#000000";
           var generatedWithAISign = "";
           let billInfoURL =
             "https://api.congress.gov/v3/bill/" +
@@ -2576,7 +2613,8 @@ $.ajax({
             data["bills"][i]["type"].toLowerCase() +
             "/" +
             data["bills"][i]["number"] +
-            "/summaries?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            "/summaries?api_key=" +
+            apiKeys.congress;
           let sponsorURL =
             "https://api.congress.gov/v3/bill/" +
             data["bills"][i]["congress"] +
@@ -2584,19 +2622,22 @@ $.ajax({
             data["bills"][i]["type"].toLowerCase() +
             "/" +
             data["bills"][i]["number"] +
-            "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            "?api_key=" +
+            apiKeys.congress;
           $.get(sponsorURL, (res) => {
             billData = res;
             let sponsorId = res["bill"]["sponsors"][0].bioguideId;
             let sponsorImgURL =
               "https://api.congress.gov/v3/member/" +
               sponsorId +
-              "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+              "?api_key=" +
+              apiKeys.congress;
             $.get(sponsorImgURL, (r) => {
               var sponsorImg = r["member"]["depiction"].imageUrl;
               $.get(billInfoURL, (resp) => {
                 if (data["bills"][i]["latestAction"]["actionDate"]) {
-                  var actionDate = data["bills"][i]["latestAction"]["actionDate"];
+                  var actionDate =
+                    data["bills"][i]["latestAction"]["actionDate"];
                 }
                 let month = actionDate[5] + actionDate[6];
                 if (month[0] == 0) {
@@ -2616,22 +2657,30 @@ $.ajax({
                 }
 
                 if (billSummary === undefined) {
-                  color1 = '#6090FF'
-                  color2 = '#FF76A1'
+                  color1 = "#6090FF";
+                  color2 = "#FF76A1";
                   for (let bill in finalResponse) {
                     let currentBill = finalResponse[bill];
-                    if (currentBill['billNumber'] == data['bills'][i]['number']) {
-                      billSummary = currentBill['summary'];
+                    if (
+                      currentBill["billNumber"] == data["bills"][i]["number"]
+                    ) {
+                      billSummary = currentBill["summary"];
                       break;
                     }
                   }
                   if (billSummary == undefined) {
-                    generatedWithAISign = ""
-                    billSummary = 'No Summary Found'
-                    color1 = '#000000'
-                    color2 = '#000000'
+                    generatedWithAISign = "";
+                    billSummary = "No Summary Found";
+                    $("#bills-spinner").remove();
+                    color1 = "#000000";
+                    color2 = "#000000";
                   } else {
-                    generatedWithAISign = '<span class="badge rounded-pill" style="background:linear-gradient(to right, ' + color1 + ', ' + color2 + ')"> Generated with AI</span>'
+                    generatedWithAISign =
+                      '<span class="badge rounded-pill" style="background:linear-gradient(to right, ' +
+                      color1 +
+                      ", " +
+                      color2 +
+                      ')"> Generated with AI</span>';
                   }
                 }
 
@@ -2652,8 +2701,14 @@ $.ajax({
                   actionDate +
                   "): " +
                   data["bills"][i]["latestAction"]["text"] +
-                  '</small></div></div></div>' + generatedWithAISign + '\
-                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' + color1 + ', ' + color2 + '); -webkit-background-clip: text; -webkit-text-fill-color: transparent">' +
+                  "</small></div></div></div>" +
+                  generatedWithAISign +
+                  '\
+                  <p class="card-text mt-2" style="background: linear-gradient(to right, ' +
+                  color1 +
+                  ", " +
+                  color2 +
+                  '); -webkit-background-clip: text; -webkit-text-fill-color: transparent">' +
                   billSummary +
                   '</p> \
                   <span class="badge rounded-pill text-bg-secondary">' +
@@ -2673,11 +2728,11 @@ $.ajax({
                 $("#column-1").append(cardHtml);
                 $(
                   "#" +
-                  data["bills"][i]["congress"] +
-                  "-" +
-                  data["bills"][i]["type"].toLowerCase() +
-                  "-" +
-                  data["bills"][i]["number"]
+                    data["bills"][i]["congress"] +
+                    "-" +
+                    data["bills"][i]["type"].toLowerCase() +
+                    "-" +
+                    data["bills"][i]["number"]
                 ).on("click", function (e) {
                   let params = e.target.id.split("-");
                   let congressNum = params[0];
@@ -2690,18 +2745,19 @@ $.ajax({
                     billType +
                     "/" +
                     billNum +
-                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                    "?api_key=" +
+                    apiKeys.congress;
                   $.get(apiUrl, function (resp) {
                     openBillModal(resp);
                   });
                 });
-              }
-
-              );
+                $("#bills-spinner").remove();
+              });
             });
           });
         }
-      }).catch(error => {
+      })
+      .catch((error) => {
         for (let i = 0; i < data["bills"].length; i++) {
           var billSummary;
           let billInfoURL =
@@ -2711,7 +2767,8 @@ $.ajax({
             data["bills"][i]["type"].toLowerCase() +
             "/" +
             data["bills"][i]["number"] +
-            "/summaries?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            "/summaries?api_key=" +
+            apiKeys.congress;
           let sponsorURL =
             "https://api.congress.gov/v3/bill/" +
             data["bills"][i]["congress"] +
@@ -2719,14 +2776,16 @@ $.ajax({
             data["bills"][i]["type"].toLowerCase() +
             "/" +
             data["bills"][i]["number"] +
-            "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+            "?api_key=" +
+            apiKeys.congress;
           $.get(sponsorURL, (res) => {
             billData = res;
             let sponsorId = res["bill"]["sponsors"][0].bioguideId;
             let sponsorImgURL =
               "https://api.congress.gov/v3/member/" +
               sponsorId +
-              "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+              "?api_key=" +
+              apiKeys.congress;
             $.get(sponsorImgURL, (r) => {
               var sponsorImg = r["member"]["depiction"].imageUrl;
               $.get(billInfoURL, (resp) => {
@@ -2735,12 +2794,13 @@ $.ajax({
                 } else if (resp["summaries"]) {
                   billSummary = resp["summaries"]["text"];
                 }
-    
+
                 if (billSummary === undefined) {
                   billSummary = "No summary available. ";
                 }
                 if (data["bills"][i]["latestAction"]["actionDate"]) {
-                  var actionDate = data["bills"][i]["latestAction"]["actionDate"];
+                  var actionDate =
+                    data["bills"][i]["latestAction"]["actionDate"];
                 }
                 let month = actionDate[5] + actionDate[6];
                 if (month[0] == 0) {
@@ -2787,7 +2847,7 @@ $.ajax({
                   '" class="btn btn-primary btn-sm ms-3">More info</a>\
                   </div> \
                 </div>';
-    
+
                 $("#column-1").append(cardHtml);
                 $(
                   "#" +
@@ -2808,7 +2868,8 @@ $.ajax({
                     billType +
                     "/" +
                     billNum +
-                    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA";
+                    "?api_key=" +
+                    apiKeys.congress;
                   $.get(apiUrl, function (resp) {
                     openBillModal(resp);
                   });
@@ -2817,8 +2878,7 @@ $.ajax({
             });
           });
         }
-      })
-        
+      });
   },
   error: function (err) {
     console.error("ERROR: Please try again later. ", err.statusCode());
@@ -2829,17 +2889,17 @@ function openBillModal(data) {
   var coSponsorData;
   var modalTest = "";
   var coSponsorHTML = "<ul>";
-  var policyArea = "No Policy Area Found"
-  if (data['bill'].hasOwnProperty("policyArea")) {
-    if (data['bill']['policyArea'].hasOwnProperty('name')) {
-      policyArea = data['bill']['policyArea']['name']
+  var policyArea = "No Policy Area Found";
+  if (data["bill"].hasOwnProperty("policyArea")) {
+    if (data["bill"]["policyArea"].hasOwnProperty("name")) {
+      policyArea = data["bill"]["policyArea"]["name"];
       if (!policyArea) {
-        policyArea = "No Policy Area Found"
+        policyArea = "No Policy Area Found";
       }
     }
   }
   var introducedDate = "No Introduced Date Found";
-  if (data['bill'].hasOwnProperty('introducedDate')) {
+  if (data["bill"].hasOwnProperty("introducedDate")) {
     introducedDate = data["bill"]["introducedDate"];
     if (!introducedDate) {
       introducedDate = "No Introduced Date Found";
@@ -2859,7 +2919,6 @@ function openBillModal(data) {
         introducedDate[3];
       introducedDate = month + "/" + day + "/" + year;
     }
-
   }
   if (data["bill"]["cosponsors"]) {
     var coSponsorURL =
@@ -2871,7 +2930,6 @@ function openBillModal(data) {
         let createdHTML = "<li>" + coSponsorName + "</li>";
         coSponsorHTML = coSponsorHTML + createdHTML;
       }
-
 
       if (data["bill"]["policyArea"]) {
         modalTest =
@@ -2975,15 +3033,14 @@ function openBillModal(data) {
     </div>';
       }
 
-        $("#modal-wrapper").text("");
-        $("#modal-wrapper").append(modalTest);
-        $("#modal-close").on("click", function () {
-          $("#myModal").hide();
-        });
-        $("#myModal").show();
-        $("#myModal").focus();
-      },
-    );
+      $("#modal-wrapper").text("");
+      $("#modal-wrapper").append(modalTest);
+      $("#modal-close").on("click", function () {
+        $("#myModal").hide();
+      });
+      $("#myModal").show();
+      $("#myModal").focus();
+    });
   } else {
     modalTest =
       '<div class="modal" role="dialog" id="myModal">\
@@ -3051,7 +3108,9 @@ $("#member-submit").on("click", function (e) {
   let findMemberURL =
     "https://www.googleapis.com/civicinfo/v2/representatives?address=" +
     $("#zipCode").val() +
-    "&key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody";
+    "&key=" +
+    apiKeys.google +
+    "&levels=country&roles=legislatorLowerBody&roles=legislatorUpperBody";
   $.ajax({
     type: "GET",
     url: findMemberURL,
@@ -3158,7 +3217,7 @@ $("#member-submit").on("click", function (e) {
 
 $.ajax({
   type: "GET",
-  url: "https://newsapi.org/v2/everything?q=congress&apiKey=a089e6f8b3f84c50844552105d6fe419",
+  url: "https://newsapi.org/v2/everything?q=congress&apiKey=" + apiKeys.newsApi,
   beforeSend: function () {
     let loadingHTML =
       "<div class='spinner-border m-3' role='status'>\

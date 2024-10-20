@@ -233,7 +233,8 @@ $.ajax({
   url:
     "https://api.congress.gov/v3/member/" +
     memberID +
-    "?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+    "?api_key=" +
+    apiKeys.congress,
   success: function (data) {
     try {
       var zipcode = data["member"]["state"];
@@ -263,7 +264,9 @@ $.ajax({
     $.ajax({
       type: "GET",
       url:
-        "https://www.googleapis.com/civicinfo/v2/representatives?key=AIzaSyDM7m2BD0BPO3a1yd48NKZbqXZrIqaYssg&address=" +
+        "https://www.googleapis.com/civicinfo/v2/representatives?key=" +
+        apiKeys.google +
+        "&address=" +
         zipcode,
       success: function (dataByLocation) {
         let officials = dataByLocation.officials;
@@ -392,7 +395,8 @@ $.ajax({
           url:
             "https://api.congress.gov/v3/member/" +
             memberID +
-            "/sponsored-legislation?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
+            "/sponsored-legislation?api_key=" +
+            apiKeys.congress,
           success: function (data) {
             let sponsoredLegislationHtml =
               "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
