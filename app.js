@@ -2511,6 +2511,11 @@ $.ajax({
   type: "GET",
   url: "https://api.congress.gov/v3/bill?api_key=O4qhb9hRP8dwqw9yr7TPkAUeeJyXGb2Y37ntvfzA",
   success: function (data) {
+    let loadingHTML =
+      "<div class='spinner-border m-3' role='status'>\
+<span class='visually-hidden'>Loading...</span>\
+</div>";
+    $("#column-1").append(loadingHTML);
     let dataset = []
     for (let i = 0; i < data['bills'].length; i++) {
       let currentBill = data['bills'][i];
@@ -2534,6 +2539,7 @@ $.ajax({
       model.generateContent(prompt + JSON.stringify(dataset4)),
     ])
       .then(([result1, result2, result3, result4]) => {
+        $('#column-1').html("")
         let stringedResponses = [result1.response.text(), result2.response.text(), result3.response.text(), result4.response.text()]; // Convert both responses to text
         let cleanedResponseString1 = stringedResponses[0].replace(/```json|```/g, '');
         let cleanedResponseString2 = stringedResponses[1].replace(/```json|```/g, '');
@@ -2702,6 +2708,7 @@ $.ajax({
           });
         }
       }).catch(error => {
+        $('#column-1').html("")
         for (let i = 0; i < data["bills"].length; i++) {
           var billSummary;
           let billInfoURL =
