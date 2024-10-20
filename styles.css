@@ -31,3 +31,8 @@ div.carousel-indicators {
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   color: #f7f5f5;
 }
+
+.modal-content {
+  border: 2px solid rgb(152, 152, 152);
+  box-shadow: 1px 1px 2px 1px rgb(152, 152, 152);
+}
