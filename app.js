@@ -2543,7 +2543,7 @@ $.ajax({
         apiKeys.congress;
       $.get(sponsorURL, (res) => {
         billData = res;
-        let sponsorId = res["bill"]["sponsors"][0].bioguideId;
+        let sponsorId = res["bill"]["sponsors"][0].bioguideId; 
         let sponsorImgURL =
           "https://api.congress.gov/v3/member/" +
           sponsorId +
