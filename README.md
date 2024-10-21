@@ -2,7 +2,6 @@
 
 # Legislens: Track, Understand, Act.
 
-TRY IT OUT HERE: [LegisLens](https://advayranade.github.io/legislens)
 
 ## Idea
 LegisLens allows users to look up key congressional data inluding respective senators/representatives, sponsored legislation, most recently acted upon legislation, and more.
