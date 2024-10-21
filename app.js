@@ -2520,6 +2520,7 @@ $.ajax({
     );
   },
   success: function (data) {
+    $("#bills-spinner").remove();
     for (let i = 0; i < data["bills"].length; i++) {
       var billSummary;
       let billInfoURL =
@@ -2558,7 +2559,9 @@ $.ajax({
             }
 
             if (billSummary === undefined) {
-              billSummary = "Summary Loading.... ";
+              billSummary = "<div class='spinner-border m-3' id='bills-spinner' role='status'>\
+              <span class='visually-hidden'>Loading...</span>\
+            </div>";
             }
             if (data["bills"][i]["latestAction"]["actionDate"]) {
               var actionDate =
