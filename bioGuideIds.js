@@ -1,4 +1,4 @@
-{
+export const bioguideIdByName = {
     "Greg Lopez": "L000604",
     "Kevin Mullin": "M001225",
     "LaMonica McIver": "M001229",
