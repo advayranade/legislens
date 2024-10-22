@@ -1,57 +1,6 @@
-var memberID = window.location.search.split("=")[1];
+import { statesAbbreviations } from "/statesAbbreviations.js";
 
-const statesAbbreviations = {
-  Alabama: "AL",
-  Alaska: "AK",
-  Arizona: "AZ",
-  Arkansas: "AR",
-  California: "CA",
-  Colorado: "CO",
-  Connecticut: "CT",
-  Delaware: "DE",
-  Florida: "FL",
-  Georgia: "GA",
-  Hawaii: "HI",
-  Idaho: "ID",
-  Illinois: "IL",
-  Indiana: "IN",
-  Iowa: "IA",
-  Kansas: "KS",
-  Kentucky: "KY",
-  Louisiana: "LA",
-  Maine: "ME",
-  Maryland: "MD",
-  Massachusetts: "MA",
-  Michigan: "MI",
-  Minnesota: "MN",
-  Mississippi: "MS",
-  Missouri: "MO",
-  Montana: "MT",
-  Nebraska: "NE",
-  Nevada: "NV",
-  "New Hampshire": "NH",
-  "New Jersey": "NJ",
-  "New Mexico": "NM",
-  "New York": "NY",
-  "North Carolina": "NC",
-  "North Dakota": "ND",
-  Ohio: "OH",
-  Oklahoma: "OK",
-  Oregon: "OR",
-  Pennsylvania: "PA",
-  "Rhode Island": "RI",
-  "South Carolina": "SC",
-  "South Dakota": "SD",
-  Tennessee: "TN",
-  Texas: "TX",
-  Utah: "UT",
-  Vermont: "VT",
-  Virginia: "VA",
-  Washington: "WA",
-  "West Virginia": "WV",
-  Wisconsin: "WI",
-  Wyoming: "WY",
-};
+var memberID = window.location.search.split("=")[1];
 
 const zipCodes = {
   "ocd-division/country:us/state:ma/cd:1": "01262",
@@ -273,8 +222,8 @@ $.ajax({
         let officials = dataByLocation.officials;
         var channelsHTML = "";
         var wikipedia = "";
-        for (term in officials) {
-          let nameByLocation = officials[term]["name"].split(" ");
+        for (let official in officials) {
+          let nameByLocation = officials[official]["name"].split(" ");
           if (
             (
               nameByLocation[0] +
@@ -287,7 +236,7 @@ $.ajax({
               data["member"]["lastName"]
             ).toLowerCase()
           ) {
-            let channels = officials[term]["channels"];
+            let channels = officials[official]["channels"];
             for (number in channels) {
               let type = channels[number].type;
               let id = channels[number].id;
@@ -301,7 +250,7 @@ $.ajax({
                 "<b>" + type + ": </b>" + "@" + id + "<br>";
               channelsHTML += currentChannelHTML;
             }
-            let url = officials[term]["urls"][1];
+            let url = officials[official]["urls"][1];
             if (url) {
               wikipedia =
                 "<b>Wikipedia: </b><a href='" +
@@ -361,9 +310,9 @@ $.ajax({
           "\
       <b>Terms:</b>\
       <div style='overflow-y: auto; height: 32.5rem;'>";
-        for (term in data["member"].terms) {
+        for (let singleTerm in data["member"].terms) {
           let termArray = data["member"]["terms"];
-          let currentTerm = termArray[termArray.length - term - 1];
+          let currentTerm = termArray[termArray.length - singleTerm - 1];
           if (currentTerm.endYear) {
             var endYearVariable = currentTerm.endYear;
           } else {
@@ -401,9 +350,9 @@ $.ajax({
           success: function (data) {
             let sponsoredLegislationHtml =
               "<p style='margin-top: 3.5em'><b>Sponsored Legislation (latest 250)</b></p><div style='overflow-y:auto; height:45rem;'>";
-            for (legislation in data["sponsoredLegislation"]) {
+            for (let singleLegislation in data["sponsoredLegislation"]) {
               let currentLegislation =
-                data["sponsoredLegislation"][legislation];
+                data["sponsoredLegislation"][singleLegislation];
               let currentLegislationCategory = "No Category Found";
               if (currentLegislation.hasOwnProperty("policyArea")) {
                 if (currentLegislation["policyArea"].hasOwnProperty["name"]) {
