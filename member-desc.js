@@ -63,9 +63,9 @@ $.ajax({
             ).toLowerCase()
           ) {
             let channels = officials[official]["channels"];
-            for (number in channels) {
-              let type = channels[number].type;
-              let id = channels[number].id;
+            for (let channelNumber in channels) {
+              let type = channels[channelNumber].type;
+              let id = channels[channelNumber].id;
               if (!type) {
                 type = "Not Found";
               }
@@ -82,7 +82,7 @@ $.ajax({
                 "<b>Wikipedia: </b><a href='" +
                 url +
                 "' target='_blank'>" +
-                "Wikipedia" +
+                data['member']['firstName'] + " " + data['member']['lastName'] +
                 "</a><br>";
             }
           }
