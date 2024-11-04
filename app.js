@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { bioguideIdByName } from "/bioGuideIds.js";
+import { bioguideIdByName } from "/legislens/bioGuideIds.js";
 
 let API_KEY = apiKeys.google;
 const genAI = new GoogleGenerativeAI(API_KEY);
