@@ -1,5 +1,5 @@
-import { statesAbbreviations } from "/statesAbbreviations.js";
-import { zipCodes } from "/zipCodes.js";
+import { statesAbbreviations } from "/legislens/statesAbbreviations.js";
+import { zipCodes } from "/legislens/zipCodes.js";
 
 var memberID = window.location.search.split("=")[1];
 
