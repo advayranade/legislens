@@ -315,7 +315,7 @@ $.ajax({
                 let cardHtml =
                   '<div class="card m-3" style="width: auto"> \
                 <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                    <a href="/member-desc.html?id=' +
+                    <a href="/legislens/member-desc.html?id=' +
                   r["member"].bioguideId +
                   '"><img src="' +
                   sponsorImg +
@@ -446,7 +446,7 @@ $.ajax({
                 let cardHtml =
                   '<div class="card m-3" style="width: auto"> \
                   <div class="card-body"><div class=""><div class="d-flex align-items-center">\
-                      <a href="/member-desc.html?id=' +
+                      <a href="/legislens/member-desc.html?id=' +
                   r["member"].bioguideId +
                   '"><img src="' +
                   sponsorImg +
