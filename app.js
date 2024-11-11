@@ -804,7 +804,7 @@ $("#member-submit").on("click", function (e) {
               "<br/><b>District #: </b>" +
               districtNum +
               "</p>\
-        <a  href='/member-desc.html?id=" +
+        <a  href='/legislens/member-desc.html?id=" +
               bioguideID +
               "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
       </div>\
@@ -825,7 +825,7 @@ $("#member-submit").on("click", function (e) {
               chamber +
               "<br/>" +
               "</p>\
-      <a href='/member-desc.html?id=" +
+      <a href='/legislens/member-desc.html?id=" +
               bioguideID +
               "' class='btn btn-secondary btn-sm mt-2'>Learn more</a>\
     </div>\
